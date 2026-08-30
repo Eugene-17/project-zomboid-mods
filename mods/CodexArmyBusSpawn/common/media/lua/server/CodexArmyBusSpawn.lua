@@ -8,6 +8,13 @@ local SPAWN_Y = 1793
 local SPAWN_Z = 0
 local CHECK_INTERVAL = 60
 
+local RV_DATA_KEY = "modPROJECTRVInterior"
+local RV_ASSIGNED_ROOMS_KEY = "AssignedRooms4x12colossal"
+local RV_ROOM_WIDTH = 4
+local RV_ROOM_HEIGHT = 12
+local RV_EXTERIOR_MARGIN = 5
+local RV_EXTERIOR_VERSION = 1
+
 local REQUESTED_ITEMS = {
     "Base.Bag_Satchel_Military",
     "Base.Glasses_Normal",
@@ -340,3 +347,109 @@ local function trySpawnBus()
 end
 
 Events.OnTick.Add(trySpawnBus)
+
+local function getSpawnedBusAndRememberRVId(state)
+    if state.rvUniqueId then return tostring(state.rvUniqueId) end
+    if not state.vehicleId then return nil end
+
+    local vehicle = getVehicleById(state.vehicleId)
+    if not vehicle or not vehicle:getModData().CodexArmyBusSpawn then return nil end
+
+    local rvUniqueId = vehicle:getModData().projectRV_uniqueId
+    if not rvUniqueId then return nil end
+
+    state.rvUniqueId = tostring(rvUniqueId)
+    return state.rvUniqueId
+end
+
+local function exteriorSpriteFor(x, y)
+    -- All four are vanilla dirt-with-grass variants and remain farmable.
+    local variants = {
+        "blends_natural_01_80",
+        "blends_natural_01_85",
+        "blends_natural_01_86",
+        "blends_natural_01_87",
+    }
+    return variants[((x * 3 + y * 5) % #variants) + 1]
+end
+
+local function patchExteriorSquare(square)
+    local spriteName = exteriorSpriteFor(square:getX(), square:getY())
+    local floor = square:getFloor()
+
+    if floor then
+        local sprite = floor:getSprite()
+        if sprite and sprite:getName() == spriteName then return false end
+        floor:setSpriteFromName(spriteName)
+        floor:transmitUpdatedSpriteToClients()
+    else
+        floor = square:addFloor(spriteName)
+        if not floor then return false end
+        floor:transmitCompleteItemToClients()
+    end
+
+    floor:getModData().EugenesArmyBusExterior = RV_EXTERIOR_VERSION
+    floor:transmitModData()
+    square:RecalcProperties()
+    square:RecalcAllWithNeighbours(true)
+    return true
+end
+
+local function tryPrepareRVExterior()
+    local state = ModData.getOrCreate(STATE_KEY)
+    if (tonumber(state.rvExteriorVersion) or 0) >= RV_EXTERIOR_VERSION then
+        Events.EveryOneMinute.Remove(tryPrepareRVExterior)
+        return
+    end
+
+    local rvUniqueId = getSpawnedBusAndRememberRVId(state)
+    if not rvUniqueId then return end
+
+    local rvData = ModData.getOrCreate(RV_DATA_KEY)
+    local assignedRooms = rvData[RV_ASSIGNED_ROOMS_KEY]
+    local room = assignedRooms and assignedRooms[rvUniqueId] or nil
+    if not room then return end
+
+    local roomX = math.floor(tonumber(room.x) or 0)
+    local roomY = math.floor(tonumber(room.y) or 0)
+    local roomZ = math.floor(tonumber(room.z) or 0)
+    if roomX == 0 or roomY == 0 then return end
+
+    local fromX = roomX - RV_EXTERIOR_MARGIN
+    local toX = roomX + RV_ROOM_WIDTH + RV_EXTERIOR_MARGIN
+    local fromY = roomY - RV_EXTERIOR_MARGIN
+    local toY = roomY + RV_ROOM_HEIGHT + RV_EXTERIOR_MARGIN
+    local allSquaresLoaded = true
+    local changed = 0
+
+    for x = fromX, toX do
+        for y = fromY, toY do
+            -- Match RV Interior's own room boundary calculation so walls and
+            -- every indoor tile retain their original flooring.
+            local outsideRoom = x < roomX or x > roomX + RV_ROOM_WIDTH
+                or y < roomY or y > roomY + RV_ROOM_HEIGHT
+            if outsideRoom then
+                local square = getCell():getGridSquare(x, y, roomZ)
+                if not square then
+                    allSquaresLoaded = false
+                elseif patchExteriorSquare(square) then
+                    changed = changed + 1
+                end
+            end
+        end
+    end
+
+    if not allSquaresLoaded then return end
+
+    state.rvExteriorVersion = RV_EXTERIOR_VERSION
+    state.rvExteriorRoomX = roomX
+    state.rvExteriorRoomY = roomY
+    state.rvExteriorRoomZ = roomZ
+    if isServer() then ModData.transmit(STATE_KEY) end
+    Events.EveryOneMinute.Remove(tryPrepareRVExterior)
+    log("Converted the assigned Army Bus RV exterior at "
+        .. tostring(roomX) .. "," .. tostring(roomY) .. "," .. tostring(roomZ)
+        .. " to farmable dirt-with-grass (" .. tostring(changed) .. " tiles changed).")
+end
+
+Events.EveryOneMinute.Add(tryPrepareRVExterior)
