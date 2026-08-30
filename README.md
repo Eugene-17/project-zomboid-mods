@@ -30,6 +30,16 @@ Dependencies: More Traits and Traits Purchase System.
 
 Adds Farming 3 bone-meal recipes. Applying one dose to a healthy, adequately watered crop advances it by one stage, with a 24-hour per-plant cooldown.
 
+### Eugene's Prone Equipment
+
+Right-click a nearby living zombie or another player while they are knocked down to change their worn clothing and wearable equipment. Items put on a target must be loose in your inventory: they cannot already be worn, held in either hand, or attached to a hotbar slot. A zombie pacified by Eugene's Zombie Cure can also be secured as a 20 kg two-handed carrier, transferred through normal vehicle storage, carried into an RV interior, and safely set down again with its appearance, clothing, inventory, and pacified state preserved.
+
+### Eugene's Zombie Cure
+
+Adds a two-stage endgame treatment. The Medical 6 Knox Infection Cure removes player zombification without healing wounds, or restores and pacifies a prone zombie. It awards 165 base Medical XP per craft, balanced so twelve doses with First Aid Volumes 4 and 5 take a character from Medical 6 to roughly Medical 10. The more expensive Medical 10 Human Restoration Serum can then replace a pacified zombie with a permanent, loyal Bandits companion.
+
+Dependency: Bandits 2.
+
 ## Installation
 
 Copy the desired folder from `mods/` into your local Project Zomboid mod directory:

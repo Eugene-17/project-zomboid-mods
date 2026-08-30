@@ -1,0 +1,22 @@
+module EugenesProneEquipment
+{
+    item PacifiedZombieCarrier
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 20.0,
+        Icon = DeadPerson_MaleZombie,
+        Capacity = 100,
+        WeightReduction = 100,
+        CanHaveHoles = false,
+        CloseSound = CloseBag,
+        OpenSound = OpenBag,
+        PutInSound = PutItemInBag,
+        RequiresEquippedBothHands = true,
+        ReplaceInPrimaryHand = Bag_DuffelBag_RHand holdingbagright,
+        ReplaceInSecondHand = Bag_DuffelBag_LHand holdingbagleft,
+        WorldStaticModel = DuffelBag_Ground,
+        Tooltip = Tooltip_EPE_PacifiedZombieCarrier,
+        Tags = base:heavyitem,
+    }
+}

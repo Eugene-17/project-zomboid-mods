@@ -1,0 +1,85 @@
+module EugenesZombieCure
+{
+    item ZombieCure
+    {
+        DisplayCategory = FirstAid,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = Antibiotics,
+        Medical = true,
+        Tooltip = Tooltip_EZC_ZombieCure,
+        WorldStaticModel = Antibiotics,
+    }
+
+    item RestorationSerum
+    {
+        DisplayCategory = FirstAid,
+        ItemType = base:normal,
+        Weight = 0.3,
+        Icon = Antibiotics,
+        Medical = true,
+        Tooltip = Tooltip_EZC_RestorationSerum,
+        WorldStaticModel = Antibiotics,
+    }
+
+    craftRecipe SynthesizeZombieCure
+    {
+        timedAction = MixingMortarPestle,
+        time = 600,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Doctor:6,
+        NeedToBeLearn = true,
+        AutoLearnAll = Doctor:6,
+        xpAward = Doctor:165,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep flags[MayDegradeLight],
+            item 1 Base.Scalpel mode:keep flags[MayDegradeLight],
+            item 1 Base.SutureNeedle mode:keep flags[MayDegradeLight],
+            item 1 Base.SutureNeedleHolder mode:keep flags[MayDegradeLight],
+            item 4 Base.Antibiotics,
+            item 1 Base.Pills,
+            item 1 Base.PillsAntiDep,
+            item 1 Base.PillsBeta,
+            item 1 Base.PillsSleepingTablets,
+            item 1 Base.PillsVitamins,
+            item 1 Base.AlcoholWipes,
+        }
+        outputs
+        {
+            item 1 EugenesZombieCure.ZombieCure,
+        }
+    }
+
+    craftRecipe SynthesizeRestorationSerum
+    {
+        timedAction = MixingMortarPestle,
+        time = 1200,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Doctor:10,
+        NeedToBeLearn = true,
+        AutoLearnAll = Doctor:10,
+        xpAward = Doctor:50,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep flags[MayDegradeLight],
+            item 1 Base.Scalpel mode:keep flags[MayDegradeLight],
+            item 1 Base.SutureNeedle mode:keep flags[MayDegradeLight],
+            item 1 Base.SutureNeedleHolder mode:keep flags[MayDegradeLight],
+            item 2 EugenesZombieCure.ZombieCure,
+            item 4 Base.Antibiotics,
+            item 2 Base.Pills,
+            item 2 Base.PillsAntiDep,
+            item 2 Base.PillsBeta,
+            item 2 Base.PillsSleepingTablets,
+            item 2 Base.PillsVitamins,
+            item 2 Base.AlcoholWipes,
+        }
+        outputs
+        {
+            item 1 EugenesZombieCure.RestorationSerum,
+        }
+    }
+}
