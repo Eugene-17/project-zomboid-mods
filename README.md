@@ -6,7 +6,7 @@ A collection of personal Project Zomboid Build 42 mods maintained by Eugene-17.
 
 ### Eugene's Army Bus Spawn
 
-Spawns one fresh Autotsar Army Bus at `13705,1793,0` once per save. The bus has a curated clean inventory, no fuel, and a 100%-condition battery at 0% charge. The five-tile exterior band around its assigned 4x12 RV Interior is converted to vanilla farmable dirt-with-grass without changing the indoor floor.
+Spawns one fresh Autotsar Army Bus at `13705,1793,0` once per save. The bus has a curated clean inventory, no fuel, and a 100%-condition battery at 0% charge. PROJECT RV Interior terrain is left unchanged, so farmable dirt must be moved into the RV area manually.
 
 Dependencies: Autotsar Tuning Atelier Bus, More Traits, Scavenging Skill, Extra Books, and Project RV Interior.
 

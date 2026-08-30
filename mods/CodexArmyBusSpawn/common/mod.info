@@ -1,5 +1,5 @@
 name=Eugene's Army Bus Spawn
 id=CodexArmyBusSpawn
-description=Spawns one fresh Autotsar Army Bus at 13705,1793,0 once per save, with a curated clean inventory, an empty fuel tank, and a perfect but fully discharged battery. Its assigned 4x12 RV Interior receives a farmable dirt-with-grass exterior while the indoor floor remains unchanged.
+description=Spawns one fresh Autotsar Army Bus at 13705,1793,0 once per save, with a curated clean inventory, an empty fuel tank, and a perfect but fully discharged battery. PROJECT RV Interior terrain is left unchanged, so farmable dirt must be moved into the RV area manually.
 versionMin=42.20
 require=\ATA_Bus,\1299328280/ToadTraits,\B4213ScavengingSkill,\ExtraBooks,\PROJECTRVInterior42
