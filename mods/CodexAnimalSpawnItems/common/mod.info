@@ -1,0 +1,5 @@
+name=Eugene's Random Animal Carriers
+id=CodexAnimalSpawnItems
+description=Craft single-use carriers that release a random breed, sex, and life stage of each animal family. Picked-up living animals can also be stored in portable bags without killing them. Includes Cats Mod support and 10 Years Later-friendly recipes.
+versionMin=42.20
+require=\CatsMod

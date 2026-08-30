@@ -1,0 +1,101 @@
+module CodexAnimalSpawnItems
+{
+    item CatCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 5.0,
+        Icon = TrapCage,
+        Tooltip = Tooltip_CASI_CatCarrier,
+    }
+
+    item ChickenCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 5.0,
+        Icon = AnimalFeed,
+        Tooltip = Tooltip_CASI_ChickenCarrier,
+    }
+
+    item CowCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 15.0,
+        Icon = TrapCrate,
+        Tooltip = Tooltip_CASI_CowCarrier,
+    }
+
+    item DeerCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 15.0,
+        Icon = TrapSnare,
+        Tooltip = Tooltip_CASI_DeerCarrier,
+    }
+
+    item MouseCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 1.0,
+        Icon = Mousetrap,
+        Tooltip = Tooltip_CASI_MouseCarrier,
+    }
+
+    item PigCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 12.0,
+        Icon = TrapCrate,
+        Tooltip = Tooltip_CASI_PigCarrier,
+    }
+
+    item RabbitCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 5.0,
+        Icon = TrapCrate,
+        Tooltip = Tooltip_CASI_RabbitCarrier,
+    }
+
+    item RaccoonCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 6.0,
+        Icon = TrapCage,
+        Tooltip = Tooltip_CASI_RaccoonCarrier,
+    }
+
+    item RatCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 2.0,
+        Icon = Mousetrap,
+        Tooltip = Tooltip_CASI_RatCarrier,
+    }
+
+    item SheepCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 10.0,
+        Icon = TrapCrate,
+        Tooltip = Tooltip_CASI_SheepCarrier,
+    }
+
+    item TurkeyCarrier
+    {
+        DisplayCategory = Trapping,
+        ItemType = base:normal,
+        Weight = 6.0,
+        Icon = AnimalFeed,
+        Tooltip = Tooltip_CASI_TurkeyCarrier,
+    }
+}

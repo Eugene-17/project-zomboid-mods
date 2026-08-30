@@ -1,0 +1,348 @@
+module CodexAnimalSpawnItems
+{
+    imports
+    {
+        Base
+    }
+
+    craftRecipe AssembleCatCarrier
+    {
+        time = 150,
+        SkillRequired = Foraging:2,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCage],
+            item 1 [Base.Tarp],
+            item 2 [Base.Twine],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.CatCarrier,
+        }
+    }
+
+    craftRecipe AssembleMouseCarrier
+    {
+        time = 90,
+        SkillRequired = Foraging:1,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapBox],
+            item 1 [Base.Twine],
+            item 2 [Base.RippedSheets],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.MouseCarrier,
+        }
+    }
+
+    craftRecipe AssembleRatCarrier
+    {
+        time = 120,
+        SkillRequired = Foraging:2,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCage],
+            item 2 [Base.Twine],
+            item 2 [Base.RippedSheets],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.RatCarrier,
+        }
+    }
+
+    craftRecipe AssembleRabbitCarrier
+    {
+        time = 180,
+        SkillRequired = Woodwork:2;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCrate],
+            item 2 [Base.Twine],
+            item 1 [Base.Tarp],
+            item 80 [Base.HayTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.RabbitCarrier,
+        }
+    }
+
+    craftRecipe AssembleRabbitCarrierGrass
+    {
+        time = 180,
+        SkillRequired = Woodwork:2;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCrate],
+            item 2 [Base.Twine],
+            item 1 [Base.Tarp],
+            item 240 [Base.GrassTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.RabbitCarrier,
+        }
+    }
+
+    craftRecipe AssembleRaccoonCarrier
+    {
+        time = 240,
+        SkillRequired = Foraging:5,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCage],
+            item 5 [Base.Wire],
+            item 1 [Base.Tarp],
+            item 1 [Base.Rope],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.RaccoonCarrier,
+        }
+    }
+
+    craftRecipe AssembleChickenCarrier
+    {
+        time = 180,
+        SkillRequired = Woodwork:1;Foraging:2,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCrate],
+            item 1 [Base.Tarp],
+            item 2 [Base.Twine],
+            item 100 [Base.HayTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.ChickenCarrier,
+        }
+    }
+
+    craftRecipe AssembleChickenCarrierGrass
+    {
+        time = 180,
+        SkillRequired = Woodwork:1;Foraging:2,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCrate],
+            item 1 [Base.Tarp],
+            item 2 [Base.Twine],
+            item 300 [Base.GrassTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.ChickenCarrier,
+        }
+    }
+
+    craftRecipe AssembleTurkeyCarrier
+    {
+        time = 210,
+        SkillRequired = Woodwork:2;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCrate],
+            item 1 [Base.Tarp],
+            item 2 [Base.Twine],
+            item 150 [Base.HayTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.TurkeyCarrier,
+        }
+    }
+
+    craftRecipe AssembleTurkeyCarrierGrass
+    {
+        time = 210,
+        SkillRequired = Woodwork:2;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.TrapCrate],
+            item 1 [Base.Tarp],
+            item 2 [Base.Twine],
+            item 450 [Base.GrassTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.TurkeyCarrier,
+        }
+    }
+
+    craftRecipe AssembleCowCarrier
+    {
+        time = 600,
+        SkillRequired = Woodwork:5;Foraging:4,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 6 [Base.Plank],
+            item 16 [Base.Nails],
+            item 3 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 300 [Base.HayTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.CowCarrier,
+        }
+    }
+
+    craftRecipe AssembleCowCarrierGrass
+    {
+        time = 600,
+        SkillRequired = Woodwork:5;Foraging:4,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 6 [Base.Plank],
+            item 16 [Base.Nails],
+            item 3 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 900 [Base.GrassTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.CowCarrier,
+        }
+    }
+
+    craftRecipe AssemblePigCarrier
+    {
+        time = 480,
+        SkillRequired = Woodwork:4;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 5 [Base.Plank],
+            item 12 [Base.Nails],
+            item 2 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 250 [Base.HayTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.PigCarrier,
+        }
+    }
+
+    craftRecipe AssemblePigCarrierGrass
+    {
+        time = 480,
+        SkillRequired = Woodwork:4;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 5 [Base.Plank],
+            item 12 [Base.Nails],
+            item 2 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 750 [Base.GrassTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.PigCarrier,
+        }
+    }
+
+    craftRecipe AssembleSheepCarrier
+    {
+        time = 480,
+        SkillRequired = Woodwork:4;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 5 [Base.Plank],
+            item 12 [Base.Nails],
+            item 2 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 250 [Base.HayTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.SheepCarrier,
+        }
+    }
+
+    craftRecipe AssembleSheepCarrierGrass
+    {
+        time = 480,
+        SkillRequired = Woodwork:4;Foraging:3,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 5 [Base.Plank],
+            item 12 [Base.Nails],
+            item 2 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 750 [Base.GrassTuft],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.SheepCarrier,
+        }
+    }
+
+    craftRecipe AssembleDeerCarrier
+    {
+        time = 600,
+        SkillRequired = Woodwork:4;Foraging:6,
+        Tags = InHandCraft,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 tags[base:saw;base:smallsaw;base:crudesaw] mode:keep flags[MayDegradeLight;Prop1],
+            item 1 tags[base:hammer] mode:keep flags[MayDegradeVeryLight],
+            item 6 [Base.Plank],
+            item 16 [Base.Nails],
+            item 3 [Base.Rope],
+            item 2 [Base.Tarp],
+            item 10 [Base.Wire],
+        }
+        outputs
+        {
+            item 1 CodexAnimalSpawnItems.DeerCarrier,
+        }
+    }
+}

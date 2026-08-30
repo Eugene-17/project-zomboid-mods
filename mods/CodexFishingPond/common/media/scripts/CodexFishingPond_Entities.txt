@@ -1,0 +1,335 @@
+module Base
+{
+    entity FishingPondCornerNW
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondCornerNW, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateCornerNW,
+            face SINGLE { layer { row = blends_natural_02_1, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeN
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeN, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeN,
+            face SINGLE { layer { row = blends_natural_02_8, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondCornerNE
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondCornerNE, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateCornerNE,
+            face SINGLE { layer { row = blends_natural_02_4, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeW
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeW, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeW,
+            face SINGLE { layer { row = blends_natural_02_9, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondCenter
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondCenter, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidCenter,
+            OnCreate = CodexFishingPond.Build.OnCreateCenter,
+            face SINGLE { layer { row = blends_natural_02_0, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:6, Tooltip = Tooltip_CFP_BuildCenter,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 10.0 categories[Water] mode:mixture,
+            }
+        }
+    }
+
+    entity FishingPondEdgeE
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeE, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeE,
+            face SINGLE { layer { row = blends_natural_02_10, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondCornerSW
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondCornerSW, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateCornerSW,
+            face SINGLE { layer { row = blends_natural_02_3, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeS
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeS, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeS,
+            face SINGLE { layer { row = blends_natural_02_11, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondCornerSE
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondCornerSE, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateCornerSE,
+            face SINGLE { layer { row = blends_natural_02_2, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeN2
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeN2, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeN2,
+            face SINGLE { layer { row = blends_natural_02_12, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeW2
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeW2, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeW2,
+            face SINGLE { layer { row = blends_natural_02_13, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeE2
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeE2, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeE2,
+            face SINGLE { layer { row = blends_natural_02_14, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondEdgeS2
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_PondEdgeS2, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidShore,
+            OnCreate = CodexFishingPond.Build.OnCreateEdgeS2,
+            face SINGLE { layer { row = blends_natural_02_15, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            SkillRequired = Woodwork:6, xpAward = Woodwork:3, Tooltip = Tooltip_CFP_BuildShore,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 5.0 categories[Water] mode:mixture,
+                item 1 [Base.Sandbag],
+            }
+        }
+    }
+
+    entity FishingPondFillTile
+    {
+        component UiConfig { xuiSkin = default, entityStyle = ES_CFP_FillPondTile, uiEnabled = false, }
+        component SpriteConfig
+        {
+            isThumpable = false,
+            OnIsValid = CodexFishingPond.Build.OnIsValidFill,
+            OnCreate = CodexFishingPond.Build.OnCreateFill,
+            face SINGLE { layer { row = blends_natural_01_0, } }
+        }
+        component CraftRecipe
+        {
+            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            Tooltip = Tooltip_CFP_FillTile,
+            inputs
+            {
+                item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
+                item 2 [Base.Dirtbag],
+            }
+        }
+    }
+}

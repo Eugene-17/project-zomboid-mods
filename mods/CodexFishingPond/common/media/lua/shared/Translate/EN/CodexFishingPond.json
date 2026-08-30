@@ -1,0 +1,5 @@
+{
+    "Tooltip_CFP_BuildShore": "Attaches one walkable vanilla shoreline graphic to the existing ground. Requires 5 L of water in a metal bucket, one use (quarter bag) of sand, a shovel or spade, and Carpentry 6. Four corners and two profiles for each edge are available.",
+    "Tooltip_CFP_BuildCenter": "Builds one true vanilla water tile recognized by fishing and fishing nets. Requires one full 10 L metal bucket of water, a shovel or spade, and Carpentry 6. Several adjacent centers give the bobber room to move.",
+    "Tooltip_CFP_FillTile": "Removes one center or shoreline tile made by this mod. Requires two uses (half a bag) of dirt and a shovel or spade. A complete 3x3 pond costs 4.5 full dirt bags to remove."
+}

@@ -1,0 +1,4 @@
+name=Eugene's Constructible Fishing Pond
+id=CodexFishingPond
+description=Build a fishable pond one tile at a time from thirteen vanilla center, edge, and corner pieces. Completing a closed 3x3-or-larger pond creates one renewable fish school for its connected water. At Fishing 4, craft Fish Check Glasses to inspect water and pond stock. Shorelines attach to walkable ground; a complete 3x3 pond uses 50 L of bucket water, two sandbags, Carpentry 6, and a shovel or spade.
+versionMin=42.20

@@ -1,0 +1,5 @@
+name=Eugene's More Traits Prowess Compatibility
+id=CodexMoreTraitsCompatibility
+description=Allows all four More Traits Prowess weapon traits to coexist, makes Ax-pert a selectable 2-point positive trait, and raises the More Traits Packer Bag capacity from 50 to 150. Prowess: Guns remains incompatible with Anti-Gun.
+versionMin=42.20
+require=\1299328280/ToadTraits,\TraitsPurchaseSystem

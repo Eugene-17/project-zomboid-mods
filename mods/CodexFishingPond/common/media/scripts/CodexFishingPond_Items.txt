@@ -1,0 +1,38 @@
+module CodexFishingPond
+{
+    item FishCheckGlasses
+    {
+        DisplayCategory = Accessory,
+        ItemType = base:clothing,
+        Weight = 0.2,
+        Icon = SafetyGoggles,
+        BodyLocation = base:eyes,
+        ChanceToFall = 10,
+        ClothingItem = Glasses_SafetyGoggles,
+        Cosmetic = true,
+        Tooltip = Tooltip_CFP_FishCheckGlasses,
+        Tags = base:ignorezombiedensity,
+    }
+
+    craftRecipe CraftFishCheckGlasses
+    {
+        timedAction = Making,
+        time = 300,
+        Tags = InHandCraft,
+        category = Fishing,
+        SkillRequired = Fishing:4,
+        NeedToBeLearn = true,
+        AutoLearnAll = Fishing:4,
+        xpAward = Fishing:5,
+        inputs
+        {
+            item 1 [Base.Glasses_SafetyGoggles],
+            item 1 [Base.MagnifyingGlass],
+            item 2 [Base.DuctTape],
+        }
+        outputs
+        {
+            item 1 CodexFishingPond.FishCheckGlasses,
+        }
+    }
+}

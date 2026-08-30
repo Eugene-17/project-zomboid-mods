@@ -1,0 +1,5 @@
+name=Eugene's Army Bus Spawn
+id=CodexArmyBusSpawn
+description=Spawns one fresh Autotsar Army Bus at 13705,1793,0 once per save, with a curated clean inventory, an empty fuel tank, and a perfect but fully discharged battery.
+versionMin=42.20
+require=\ATA_Bus,\1299328280/ToadTraits,\B4213ScavengingSkill,\ExtraBooks

@@ -1,0 +1,53 @@
+module CodexBoneMeal
+{
+    item BoneMeal
+    {
+        DisplayCategory = Gardening,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = TZ_IndieStoneNPK,
+        Tooltip = Tooltip_CBM_BoneMeal,
+    }
+
+    craftRecipe GrindBoneMeal
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        Tags = AnySurfaceCraft;Farming,
+        category = Farming,
+        SkillRequired = Farming:3,
+        NeedToBeLearn = true,
+        AutoLearnAll = Farming:3,
+        xpAward = Farming:3,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 1 [Base.AnimalBone;Base.LargeAnimalBone],
+        }
+        outputs
+        {
+            item 1 CodexBoneMeal.BoneMeal,
+        }
+    }
+
+    craftRecipe GrindSmallBonesIntoBoneMeal
+    {
+        timedAction = MixingMortarPestle,
+        time = 160,
+        Tags = AnySurfaceCraft;Farming,
+        category = Farming,
+        SkillRequired = Farming:3,
+        NeedToBeLearn = true,
+        AutoLearnAll = Farming:3,
+        xpAward = Farming:3,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 3 [Base.SmallAnimalBone],
+        }
+        outputs
+        {
+            item 1 CodexBoneMeal.BoneMeal,
+        }
+    }
+}
