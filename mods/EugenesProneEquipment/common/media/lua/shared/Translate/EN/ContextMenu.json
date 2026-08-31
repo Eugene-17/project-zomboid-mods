@@ -1,10 +1,10 @@
 {
     "ContextMenu_EPE_ManageEquipment": "Manage equipment: %1",
-    "ContextMenu_EPE_PutOnTarget": "Put on target",
-    "ContextMenu_EPE_NoWearableItems": "No unequipped wearable items",
-    "ContextMenu_EPE_TakeOffTarget": "Take off target",
-    "ContextMenu_EPE_NoWornEquipment": "No worn equipment",
+    "ContextMenu_EPE_PutOnTarget": "Give or equip item",
+    "ContextMenu_EPE_NoWearableItems": "No loose items available",
+    "ContextMenu_EPE_TakeOffTarget": "Take item",
+    "ContextMenu_EPE_NoWornEquipment": "No items available",
+    "ContextMenu_EPE_WornItem": "%1 (worn)",
     "ContextMenu_EPE_PickUpZombie": "Pick up pacified zombie",
     "ContextMenu_EPE_SetDownZombie": "Set down pacified zombie"
 }
-

@@ -1,5 +1,6 @@
 {
     "ContextMenu_EZC_UseSelf": "Inject Knox Infection Cure",
     "ContextMenu_EZC_UseZombie": "Administer Knox Cure to Zombie",
-    "ContextMenu_EZC_RestoreZombie": "Administer Human Restoration Serum"
+    "ContextMenu_EZC_RestoreZombie": "Administer Human Restoration Serum",
+    "ContextMenu_EZC_ReanimateCorpse": "Administer Reanimation Stimulant"
 }

@@ -51,15 +51,34 @@ local function collectZombies(playerObj, worldObjects)
     return result
 end
 
+local function pickHumanCorpse(playerObj)
+    local corpse = IsoObjectPicker.Instance:PickCorpse(getMouseX(), getMouseY())
+    if M.canReviveCorpse(playerObj, corpse) then return corpse end
+    return nil
+end
+
 local function onFillWorldObjectContextMenu(playerNum, context, worldObjects, test)
     local playerObj = getSpecificPlayer(playerNum)
     if not playerObj then return end
     local cure = playerObj:getInventory():getFirstTypeRecurse(M.ITEM_FULL_TYPE)
     local serum = playerObj:getInventory():getFirstTypeRecurse(M.RESTORATION_ITEM_FULL_TYPE)
-    if not cure and not serum then return end
+    local stimulant = playerObj:getInventory():getFirstTypeRecurse(M.REANIMATION_ITEM_FULL_TYPE)
+    if not cure and not serum and not stimulant then return end
     local zombies = collectZombies(playerObj, worldObjects)
-    if #zombies == 0 then return end
+    local corpse = stimulant and pickHumanCorpse(playerObj) or nil
+    if #zombies == 0 and not corpse then return end
     if test then return ISWorldObjectContextMenu.setTest() end
+
+    if corpse then
+        local option = context:addOption(
+            getText("ContextMenu_EZC_ReanimateCorpse"),
+            playerObj,
+            beginTreatment,
+            stimulant,
+            corpse
+        )
+        option.iconTexture = stimulant:getTexture()
+    end
 
     for _, zombie in ipairs(zombies) do
         if serum and M.canRestoreZombie(playerObj, zombie) then

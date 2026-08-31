@@ -22,6 +22,43 @@ module EugenesZombieCure
         WorldStaticModel = Antibiotics,
     }
 
+    item ReanimationStimulant
+    {
+        DisplayCategory = FirstAid,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = Antibiotics,
+        Medical = true,
+        Tooltip = Tooltip_EZC_ReanimationStimulant,
+        WorldStaticModel = Antibiotics,
+    }
+
+    craftRecipe SynthesizeReanimationStimulant
+    {
+        timedAction = MixingMortarPestle,
+        time = 450,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Doctor:3,
+        NeedToBeLearn = true,
+        AutoLearnAll = Doctor:3,
+        xpAward = Doctor:20,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Scalpel] mode:keep flags[MayDegradeLight],
+            item 1 [Base.Antibiotics],
+            item 1 [Base.Pills],
+            item 1 [Base.PillsBeta],
+            item 1 [Base.PillsSleepingTablets],
+            item 2 [Base.AlcoholWipes],
+        }
+        outputs
+        {
+            item 1 EugenesZombieCure.ReanimationStimulant,
+        }
+    }
+
     craftRecipe SynthesizeZombieCure
     {
         timedAction = MixingMortarPestle,

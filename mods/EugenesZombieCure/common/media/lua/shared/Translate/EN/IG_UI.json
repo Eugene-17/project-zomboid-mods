@@ -14,6 +14,9 @@
     "IGUI_EZC_SpawnTimedOut": "Bandits did not finish spawning the companion; the serum was not consumed.",
     "IGUI_EZC_RestorationSuccess": "The restored survivor has joined you as a permanent companion.",
     "IGUI_EZC_FallbackNameFemale": "Restored Survivor",
-    "IGUI_EZC_FallbackNameMale": "Restored Survivor"
+    "IGUI_EZC_FallbackNameMale": "Restored Survivor",
+    "IGUI_EZC_CorpseInvalid": "The human corpse is no longer present or is too far away.",
+    "IGUI_EZC_StimulantMissing": "The reanimation stimulant is no longer in your inventory.",
+    "IGUI_EZC_ReanimationFailed": "The corpse could not be reanimated; the stimulant was not consumed.",
+    "IGUI_EZC_CorpseReanimated": "The corpse is reanimating as a zombie."
 }
-

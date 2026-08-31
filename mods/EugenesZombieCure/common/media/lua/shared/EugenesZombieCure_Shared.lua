@@ -8,10 +8,14 @@ local EPE = EugenesProneEquipment
 M.MODULE = "EugenesZombieCure"
 M.ITEM_FULL_TYPE = "EugenesZombieCure.ZombieCure"
 M.RESTORATION_ITEM_FULL_TYPE = "EugenesZombieCure.RestorationSerum"
+M.REANIMATION_ITEM_FULL_TYPE = "EugenesZombieCure.ReanimationStimulant"
+M.RESTORED_EQUIPMENT_VERSION = 3
+M.RESTORED_VISUAL_VERSION = 1
 M.MAX_DISTANCE_SQUARED = 6.25
 
 local pacifiedThisSession = setmetatable({}, { __mode = "k" })
 local pacifiedAppearanceApplied = setmetatable({}, { __mode = "k" })
+local pacifiedRecordApplied = setmetatable({}, { __mode = "k" })
 local restoredRecordApplied = setmetatable({}, { __mode = "k" })
 
 function M.isCureItem(item)
@@ -22,8 +26,12 @@ function M.isRestorationItem(item)
     return item and item:getFullType() == M.RESTORATION_ITEM_FULL_TYPE
 end
 
+function M.isReanimationItem(item)
+    return item and item:getFullType() == M.REANIMATION_ITEM_FULL_TYPE
+end
+
 function M.isTreatmentItem(item)
-    return M.isCureItem(item) or M.isRestorationItem(item)
+    return M.isCureItem(item) or M.isRestorationItem(item) or M.isReanimationItem(item)
 end
 
 function M.hasCure(playerObj, item)
@@ -61,6 +69,18 @@ function M.isCloseEnough(playerObj, zombie)
     return dx * dx + dy * dy <= M.MAX_DISTANCE_SQUARED
 end
 
+function M.isHumanCorpse(corpse)
+    return corpse
+        and instanceof(corpse, "IsoDeadBody")
+        and not corpse:isAnimal()
+        and corpse:getSquare() ~= nil
+        and corpse:getStaticMovingObjectIndex() >= 0
+end
+
+function M.canReviveCorpse(playerObj, corpse)
+    return M.isHumanCorpse(corpse) and M.isCloseEnough(playerObj, corpse)
+end
+
 function M.canTreatZombie(playerObj, zombie)
     return M.isProneLivingZombie(zombie)
         and not M.isRestoredCompanionBrain(zombie:getModData().brain)
@@ -81,6 +101,15 @@ function M.makeZombieArgs(zombie)
     }
 end
 
+function M.makeCorpseArgs(corpse)
+    return {
+        targetX = math.floor(corpse:getX()),
+        targetY = math.floor(corpse:getY()),
+        targetZ = math.floor(corpse:getZ()),
+        targetIndex = corpse:getStaticMovingObjectIndex(),
+    }
+end
+
 function M.chooseNormalSkinName(zombie)
     local humanVisual = zombie:getHumanVisual()
     local index = humanVisual:getSkinTextureIndex()
@@ -90,16 +119,7 @@ function M.chooseNormalSkinName(zombie)
 end
 
 local function cleanItemVisuals(zombie)
-    local visuals = zombie:getItemVisuals()
-    local bodyPartCount = BloodBodyPartType.MAX:index()
-    for visualIndex = 0, visuals:size() - 1 do
-        local visual = visuals:get(visualIndex)
-        visual:removeBlood()
-        visual:removeDirt()
-        for bodyPartIndex = 0, bodyPartCount - 1 do
-            visual:removeHole(bodyPartIndex)
-        end
-    end
+    EPE.cleanZombieVisualDamage(zombie)
 end
 
 function M.cleanZombieAppearance(zombie, skinName)
@@ -161,6 +181,7 @@ function M.clearPacifiedZombieState(zombie)
     if not zombie then return end
     pacifiedThisSession[zombie] = nil
     pacifiedAppearanceApplied[zombie] = nil
+    pacifiedRecordApplied[zombie] = nil
     local data = zombie:getModData()
     data.EugenesZombieCurePacified = nil
     data.EugenesZombieCureSkinName = nil
@@ -173,11 +194,21 @@ end
 
 function M.activateRestoredCompanion(zombie, brain)
     if not zombie or not M.isRestoredCompanionBrain(brain) then return end
-    if not restoredRecordApplied[zombie] then
-        local record = EPE.findZombieRecord(zombie:getInventory())
-        if record and EPE.applyZombieRecord(zombie, record, false) then
-            restoredRecordApplied[zombie] = true
-        end
+    if restoredRecordApplied[zombie] then return end
+    local record = EPE.findZombieRecord(zombie:getInventory())
+    local snapshot = EPE.getZombieRecordSnapshot(record)
+        or brain.EugenesZombieCureSnapshot
+    if snapshot and EPE.applyZombieAppearanceSnapshot(
+        zombie,
+        snapshot.appearance or {},
+        false
+    ) then
+        restoredRecordApplied[zombie] = true
+        local walkType = zombie:getVariableString("BanditWalkType")
+        if not walkType or walkType == "" then walkType = "Walk" end
+        zombie:setVariable("BanditWalkType", walkType)
+        zombie:setWalkType(walkType)
+        zombie:resetModelNextFrame()
     end
 end
 
@@ -202,7 +233,17 @@ local function onZombieUpdate(zombie)
         return
     end
     M.pacifyZombie(zombie)
-    if not pacifiedAppearanceApplied[zombie] and data.EugenesZombieCureSkinName then
+    local record = EPE.findZombieRecord(zombie:getInventory())
+    local snapshot = EPE.getZombieRecordSnapshot(record)
+    local equipmentMatches = snapshot and EPE.zombieEquipmentMatchesSnapshot(zombie, snapshot)
+    local hasVisualDamage = EPE.hasZombieVisualDamage(zombie)
+    if record and (not pacifiedRecordApplied[zombie] or not equipmentMatches
+        or hasVisualDamage)
+        and EPE.applyZombieRecord(zombie, record, false) then
+        pacifiedRecordApplied[zombie] = true
+        pacifiedAppearanceApplied[zombie] = true
+    elseif data.EugenesZombieCureSkinName and (not pacifiedAppearanceApplied[zombie]
+        or hasVisualDamage) then
         M.cleanZombieAppearance(zombie, data.EugenesZombieCureSkinName)
     end
 end

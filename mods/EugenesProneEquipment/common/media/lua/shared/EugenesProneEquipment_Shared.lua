@@ -52,6 +52,57 @@ local function applyItemVisualSnapshot(visual, row)
     if tint then visual:setTint(tint) end
 end
 
+local function hasVisualDamage(visual, checkHoles)
+    if not visual then return false end
+    local maxIndex = BloodBodyPartType.MAX:index()
+    for index = 0, maxIndex - 1 do
+        local part = BloodBodyPartType.FromIndex(index)
+        if visual:getBlood(part) > 0 or visual:getDirt(part) > 0 then return true end
+        if checkHoles and visual:getHole(part) > 0 then return true end
+    end
+    return false
+end
+
+local function cleanVisualDamage(visual, cleanHoles)
+    if not visual then return end
+    visual:removeBlood()
+    visual:removeDirt()
+    local maxIndex = BloodBodyPartType.MAX:index()
+    if cleanHoles then
+        for index = 0, maxIndex - 1 do visual:removeHole(index) end
+    end
+end
+
+function M.hasZombieVisualDamage(zombie)
+    if not zombie then return false end
+    local humanVisual = zombie:getHumanVisual()
+    if hasVisualDamage(humanVisual, false) or humanVisual:getBodyVisuals():size() > 0 then return true end
+    local visuals = zombie:getItemVisuals()
+    for index = 0, visuals:size() - 1 do
+        if hasVisualDamage(visuals:get(index), true) then return true end
+    end
+    local wornItems = zombie:getWornItems()
+    for index = 0, wornItems:size() - 1 do
+        local item = wornItems:getItemByIndex(index)
+        if item and hasVisualDamage(item:getVisual(), true) then return true end
+    end
+    return false
+end
+
+function M.cleanZombieVisualDamage(zombie)
+    if not zombie then return end
+    local humanVisual = zombie:getHumanVisual()
+    cleanVisualDamage(humanVisual, false)
+    humanVisual:getBodyVisuals():clear()
+    local visuals = zombie:getItemVisuals()
+    for index = 0, visuals:size() - 1 do cleanVisualDamage(visuals:get(index), true) end
+    local wornItems = zombie:getWornItems()
+    for index = 0, wornItems:size() - 1 do
+        local item = wornItems:getItemByIndex(index)
+        if item then cleanVisualDamage(item:getVisual(), true) end
+    end
+end
+
 function M.getWearLocation(item)
     if not item then return nil end
     local location = item:canBeEquipped()
@@ -71,14 +122,20 @@ function M.resolveWearLocation(locationText, item)
     return M.getWearLocation(item)
 end
 
-function M.isLooseWearable(playerObj, item)
-    if not playerObj or not item or item:isBroken() then return false end
+function M.isLooseTransferable(playerObj, item)
+    if not playerObj or not item then return false end
     if not playerObj:getInventory():containsRecursive(item) then return false end
     if playerObj:getPrimaryHandItem() == item then return false end
     if playerObj:getSecondaryHandItem() == item then return false end
     if playerObj:getWornItems():contains(item) then return false end
     if playerObj:isAttachedItem(item) then return false end
-    return M.getWearLocation(item) ~= nil
+    return true
+end
+
+function M.isLooseWearable(playerObj, item)
+    return M.isLooseTransferable(playerObj, item)
+        and not item:isBroken()
+        and M.getWearLocation(item) ~= nil
 end
 
 function M.isProneLivingTarget(playerObj, target)
@@ -98,8 +155,26 @@ function M.isCloseEnough(playerObj, target)
     return dx * dx + dy * dy <= M.MAX_DISTANCE_SQUARED
 end
 
+function M.isCompanionTarget(target)
+    if not target or not instanceof(target, "IsoZombie") or target:isDead() then return false end
+    local brain = target:getModData().brain
+    local cureApi = EugenesZombieCure
+    if cureApi and cureApi.isRestoredCompanionBrain
+        and cureApi.isRestoredCompanionBrain(brain) then
+        return true
+    end
+    local program = brain and brain.program
+    local programName = type(program) == "table" and program.name or program
+    return target:getVariableBoolean("Bandit")
+        and brain ~= nil
+        and not brain.hostile
+        and not brain.hostileP
+        and (programName == "Companion" or programName == "CompanionGuard")
+end
+
 function M.canInteract(playerObj, target)
-    return M.isProneLivingTarget(playerObj, target) and M.isCloseEnough(playerObj, target)
+    if not M.isCloseEnough(playerObj, target) then return false end
+    return M.isProneLivingTarget(playerObj, target) or M.isCompanionTarget(target)
 end
 
 function M.isPacifiedZombie(target)
@@ -131,6 +206,23 @@ function M.findZombieRecord(container)
     return nil
 end
 
+function M.removeZombieRecords(container)
+    if not container then return 0 end
+    local removed = 0
+    local records = container:getAllEvalRecurse(function(item)
+        return M.isZombieRecord(item)
+    end)
+    for index = records:size() - 1, 0, -1 do
+        local item = records:get(index)
+        local source = item and item:getContainer() or nil
+        if source then
+            source:Remove(item)
+            removed = removed + 1
+        end
+    end
+    return removed
+end
+
 function M.getZombieRecordSnapshot(record)
     if not M.isZombieRecord(record) then return nil end
     return record:getModData().EugenesZombieRecordSnapshot
@@ -156,7 +248,13 @@ function M.getTargetKind(target)
 end
 
 function M.getTargetName(target)
-    if instanceof(target, "IsoZombie") then return getText("IGUI_EPE_TargetZombie") end
+    if instanceof(target, "IsoZombie") then
+        local brain = target:getModData().brain
+        if M.isCompanionTarget(target) and brain and brain.fullname and brain.fullname ~= "" then
+            return brain.fullname
+        end
+        return getText("IGUI_EPE_TargetZombie")
+    end
     local name = target:getDisplayName()
     if not name or name == "" then name = target:getUsername() end
     return name or getText("IGUI_EPE_TargetPlayer")
@@ -367,10 +465,17 @@ local function appendNamedCounts(lines, counts)
     end
 end
 
+local function hasEntries(values)
+    for _ in pairs(values or {}) do
+        return true
+    end
+    return false
+end
+
 function M.makeZombieRecordText(snapshot, sourceContainer)
     local appearance = snapshot and snapshot.appearance or {}
     local possessions, physicallyWorn = collectPossessionNames(sourceContainer)
-    if next(physicallyWorn) == nil then
+    if not hasEntries(physicallyWorn) then
         for _, row in ipairs(snapshot and snapshot.worn or {}) do
             local name = row.displayName or getText("IGUI_EPE_RecordUnknown")
             physicallyWorn[name] = (physicallyWorn[name] or 0) + 1
@@ -506,10 +611,8 @@ local function findVisualRow(snapshot, item, location)
     return nil
 end
 
-function M.applyZombieRecord(zombie, record, applyHealth)
-    local snapshot = M.getZombieRecordSnapshot(record)
-    if not zombie or not snapshot then return false end
-    local appearance = snapshot.appearance or {}
+function M.applyZombieAppearanceSnapshot(zombie, appearance, applyHealth)
+    if not zombie or type(appearance) ~= "table" then return false end
     if appearance.female ~= nil and zombie.setFemaleEtc then
         zombie:setFemaleEtc(appearance.female)
     end
@@ -540,6 +643,14 @@ function M.applyZombieRecord(zombie, record, applyHealth)
     if applyHealth and appearance.health then
         zombie:setHealth(math.max(0.1, appearance.health))
     end
+    return true
+end
+
+function M.applyZombieSnapshot(zombie, snapshot, applyHealth)
+    if not zombie or type(snapshot) ~= "table" then return false end
+    if not M.applyZombieAppearanceSnapshot(zombie, snapshot.appearance or {}, applyHealth) then
+        return false
+    end
 
     local inventory = zombie:getInventory()
     markItemsFromSnapshot(inventory, snapshot)
@@ -564,13 +675,38 @@ function M.applyZombieRecord(zombie, record, applyHealth)
     local itemVisuals = zombie:getItemVisuals()
     itemVisuals:clear()
     zombie:getWornItems():getItemVisuals(itemVisuals)
-    local maxIndex = BloodBodyPartType.MAX:index()
-    for index = 0, itemVisuals:size() - 1 do
-        local visual = itemVisuals:get(index)
-        visual:removeBlood()
-        visual:removeDirt()
-        for bodyPartIndex = 0, maxIndex - 1 do visual:removeHole(bodyPartIndex) end
-    end
+    M.cleanZombieVisualDamage(zombie)
     zombie:resetModelNextFrame()
     return true
+end
+
+function M.zombieEquipmentMatchesSnapshot(zombie, snapshot)
+    if not zombie or type(snapshot) ~= "table" then return false end
+    local expected = snapshot.worn or {}
+    local wornItems = zombie:getWornItems()
+    if wornItems:size() ~= #expected then return false end
+    local used = {}
+    for _, row in ipairs(expected) do
+        local found = false
+        for index = 0, wornItems:size() - 1 do
+            if not used[index] then
+                local item = wornItems:getItemByIndex(index)
+                local location = item and wornItems:getLocation(item) or nil
+                if item and item:getFullType() == row.fullType
+                    and (not row.location or tostring(location) == tostring(row.location)) then
+                    used[index] = true
+                    found = true
+                    break
+                end
+            end
+        end
+        if not found then return false end
+    end
+    return true
+end
+
+function M.applyZombieRecord(zombie, record, applyHealth)
+    local snapshot = M.getZombieRecordSnapshot(record)
+    if not snapshot then return false end
+    return M.applyZombieSnapshot(zombie, snapshot, applyHealth)
 end

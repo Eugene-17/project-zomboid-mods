@@ -6,6 +6,7 @@ require "TimedActions/ISEugenesCarryZombieAction"
 require "EugenesProneEquipment_Shared"
 
 local M = EugenesProneEquipment
+local pendingZombieVisuals = {}
 
 local function beginCarryZombie(playerObj, zombie)
     if not M.canCarryZombie(playerObj, zombie) then return end
@@ -31,7 +32,7 @@ local function beginSetDownZombie(playerObj, carrier)
     ))
 end
 
-local function addTimedAction(playerObj, target, operation, item, location, fullType)
+local function addTimedAction(playerObj, target, operation, item, location, fullType, targetItemId)
     if not playerObj or not target then return end
     ISTimedActionQueue.add(ISEugenesChangeEquipmentAction:new(
         playerObj,
@@ -39,13 +40,14 @@ local function addTimedAction(playerObj, target, operation, item, location, full
         operation,
         item,
         location,
-        fullType
+        fullType,
+        targetItemId
     ))
 end
 
-local function collectLooseWearables(playerObj)
+local function collectLooseItems(playerObj)
     local matches = playerObj:getInventory():getAllEvalRecurse(function(item)
-        return M.isLooseWearable(playerObj, item)
+        return M.isLooseTransferable(playerObj, item)
     end)
     local result = {}
     for index = 0, matches:size() - 1 do
@@ -57,8 +59,48 @@ local function collectLooseWearables(playerObj)
     return result
 end
 
-local function collectTargetEquipment(target)
+local function collectTargetItems(target)
     local result = {}
+    local seen = {}
+    local representedVisuals = {}
+    local wornItems = target:getWornItems()
+
+    local function addActualItem(item)
+        if not item or seen[item] or M.isZombieRecord(item) then return end
+        seen[item] = true
+        local isWorn = wornItems:contains(item)
+        local location = isWorn and wornItems:getLocation(item) or nil
+        local name = item:getDisplayName()
+        if isWorn then name = getText("ContextMenu_EPE_WornItem", name) end
+        result[#result + 1] = {
+            item = item,
+            name = name,
+            fullType = item:getFullType(),
+            location = location and tostring(location) or nil,
+            itemId = item:getID(),
+        }
+        if isWorn then
+            representedVisuals[item:getFullType() .. "|" .. tostring(location)] = true
+        end
+    end
+
+    local inventoryItems = target:getInventory():getAllEvalRecurse(function(item)
+        return item ~= nil and not M.isZombieRecord(item)
+    end)
+    for index = 0, inventoryItems:size() - 1 do
+        addActualItem(inventoryItems:get(index))
+    end
+    for index = 0, wornItems:size() - 1 do
+        addActualItem(wornItems:getItemByIndex(index))
+    end
+    addActualItem(target:getPrimaryHandItem())
+    addActualItem(target:getSecondaryHandItem())
+    local attachedItems = target:getAttachedItems()
+    for index = 0, attachedItems:size() - 1 do
+        local entry = attachedItems:get(index)
+        addActualItem(entry and entry:getItem() or nil)
+    end
+
     if instanceof(target, "IsoZombie") then
         local visuals = target:getItemVisuals()
         for index = 0, visuals:size() - 1 do
@@ -67,27 +109,17 @@ local function collectTargetEquipment(target)
             if fullType and fullType ~= "" then
                 local item = instanceItem(fullType)
                 local location = M.getWearLocation(item)
-                if item and location then
+                local visualKey = fullType .. "|" .. tostring(location)
+                if item and location and not representedVisuals[visualKey] then
+                    representedVisuals[visualKey] = true
                     result[#result + 1] = {
                         item = item,
-                        name = item:getDisplayName(),
+                        name = getText("ContextMenu_EPE_WornItem", item:getDisplayName()),
                         fullType = fullType,
                         location = tostring(location),
                     }
                 end
             end
-        end
-    else
-        local wornItems = target:getWornItems()
-        for index = 0, wornItems:size() - 1 do
-            local item = wornItems:getItemByIndex(index)
-            local location = wornItems:getLocation(item)
-            result[#result + 1] = {
-                item = item,
-                name = item:getDisplayName(),
-                fullType = item:getFullType(),
-                location = tostring(location),
-            }
         end
     end
     table.sort(result, function(left, right) return left.name < right.name end)
@@ -104,7 +136,7 @@ local function addEquipmentMenus(context, playerObj, target)
     local wearOption = targetMenu:addOption(getText("ContextMenu_EPE_PutOnTarget"))
     local wearMenu = ISContextMenu:getNew(targetMenu)
     targetMenu:addSubMenu(wearOption, wearMenu)
-    local looseItems = collectLooseWearables(playerObj)
+    local looseItems = collectLooseItems(playerObj)
     if #looseItems == 0 then
         local empty = wearMenu:addOption(getText("ContextMenu_EPE_NoWearableItems"))
         empty.notAvailable = true
@@ -118,6 +150,7 @@ local function addEquipmentMenus(context, playerObj, target)
                 "wear",
                 item,
                 nil,
+                nil,
                 nil
             )
             option.iconTexture = item:getTexture()
@@ -127,12 +160,12 @@ local function addEquipmentMenus(context, playerObj, target)
     local takeOption = targetMenu:addOption(getText("ContextMenu_EPE_TakeOffTarget"))
     local takeMenu = ISContextMenu:getNew(targetMenu)
     targetMenu:addSubMenu(takeOption, takeMenu)
-    local targetEquipment = collectTargetEquipment(target)
-    if #targetEquipment == 0 then
+    local targetItems = collectTargetItems(target)
+    if #targetItems == 0 then
         local empty = takeMenu:addOption(getText("ContextMenu_EPE_NoWornEquipment"))
         empty.notAvailable = true
     else
-        for _, entry in ipairs(targetEquipment) do
+        for _, entry in ipairs(targetItems) do
             local option = takeMenu:addOption(
                 entry.name,
                 playerObj,
@@ -141,7 +174,8 @@ local function addEquipmentMenus(context, playerObj, target)
                 "take",
                 nil,
                 entry.location,
-                entry.fullType
+                entry.fullType,
+                entry.itemId
             )
             option.iconTexture = entry.item:getTexture()
         end
@@ -151,8 +185,11 @@ end
 local function collectTargets(playerObj, worldObjects)
     local targets = {}
     local seen = {}
-    for _, worldObject in ipairs(worldObjects) do
-        local square = worldObject and worldObject:getSquare()
+    local seenSquares = {}
+
+    local function collectSquare(square)
+        if not square or seenSquares[square] then return end
+        seenSquares[square] = true
         local movingObjects = square and square:getMovingObjects()
         if movingObjects then
             for index = 0, movingObjects:size() - 1 do
@@ -164,6 +201,20 @@ local function collectTargets(playerObj, worldObjects)
                     targets[#targets + 1] = target
                 end
             end
+        end
+    end
+
+    for _, worldObject in ipairs(worldObjects) do
+        collectSquare(worldObject and worldObject:getSquare())
+    end
+    if BanditCompatibility and BanditCompatibility.GetClickedSquare then
+        local clicked = BanditCompatibility.GetClickedSquare()
+        collectSquare(clicked)
+        if clicked then
+            collectSquare(clicked:getN())
+            collectSquare(clicked:getS())
+            collectSquare(clicked:getE())
+            collectSquare(clicked:getW())
         end
     end
     return targets
@@ -219,9 +270,26 @@ end
 
 local function applyZombieVisuals(args)
     local targetId = tonumber(args.targetId)
-    if not targetId then return end
+    if not targetId then return false end
     local zombie = findZombieByOnlineId(targetId)
-    if not zombie then return end
+    if not zombie then
+        pendingZombieVisuals[targetId] = args
+        return false
+    end
+
+    pendingZombieVisuals[targetId] = nil
+    local companion = M.isCompanionTarget(zombie)
+    if args.appearance then
+        M.applyZombieAppearanceSnapshot(zombie, args.appearance, false)
+    end
+
+    if companion then
+        local walkType = zombie:getVariableString("BanditWalkType")
+        if not walkType or walkType == "" then walkType = "Walk" end
+        zombie:setVariable("BanditWalkType", walkType)
+        zombie:setWalkType(walkType)
+        return true
+    end
 
     local visuals = zombie:getItemVisuals()
     visuals:clear()
@@ -244,6 +312,13 @@ local function applyZombieVisuals(args)
         end
     end
     zombie:resetModelNextFrame()
+    return true
+end
+
+local function applyPendingZombieVisuals(zombie)
+    if not zombie then return end
+    local args = pendingZombieVisuals[zombie:getOnlineID()]
+    if args then applyZombieVisuals(args) end
 end
 
 local function findOwnedCarrier(itemId)
@@ -294,3 +369,4 @@ end
 Events.OnFillWorldObjectContextMenu.Add(onFillWorldObjectContextMenu)
 Events.OnFillInventoryObjectContextMenu.Add(onFillInventoryObjectContextMenu)
 Events.OnServerCommand.Add(onServerCommand)
+Events.OnZombieUpdate.Add(applyPendingZombieVisuals)

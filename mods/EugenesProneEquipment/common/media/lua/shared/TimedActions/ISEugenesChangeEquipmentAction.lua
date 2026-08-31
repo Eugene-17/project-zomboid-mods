@@ -8,7 +8,7 @@ local M = EugenesProneEquipment
 function ISEugenesChangeEquipmentAction:isValid()
     if not M.canInteract(self.character, self.target) then return false end
     if self.operation == "wear" then
-        return M.isLooseWearable(self.character, self.item)
+        return M.isLooseTransferable(self.character, self.item)
     end
     return true
 end
@@ -51,6 +51,7 @@ function ISEugenesChangeEquipmentAction:complete()
     if self.operation == "wear" then
         args.itemId = self.item:getID()
     else
+        args.targetItemId = self.targetItemId
         args.location = self.location
         args.fullType = self.fullType
     end
@@ -68,13 +69,14 @@ function ISEugenesChangeEquipmentAction:getDuration()
     return 80
 end
 
-function ISEugenesChangeEquipmentAction:new(character, target, operation, item, location, fullType)
+function ISEugenesChangeEquipmentAction:new(character, target, operation, item, location, fullType, targetItemId)
     local o = ISBaseTimedAction.new(self, character)
     o.target = target
     o.operation = operation
     o.item = item
     o.location = location
     o.fullType = fullType
+    o.targetItemId = targetItemId
     o.maxTime = o:getDuration()
     o.stopOnWalk = true
     o.stopOnRun = true

@@ -7,6 +7,9 @@ local M = EugenesZombieCure
 
 function ISEugenesZombieCureAction:isValid()
     if not M.hasTreatmentItem(self.character, self.item) then return false end
+    if M.isReanimationItem(self.item) then
+        return self.target and M.canReviveCorpse(self.character, self.target)
+    end
     if M.isRestorationItem(self.item) then
         return self.target and M.canRestoreZombie(self.character, self.target)
     end
@@ -28,7 +31,9 @@ end
 
 function ISEugenesZombieCureAction:start()
     local jobText
-    if M.isRestorationItem(self.item) then
+    if M.isReanimationItem(self.item) then
+        jobText = getText("ContextMenu_EZC_ReanimateCorpse")
+    elseif M.isRestorationItem(self.item) then
         jobText = getText("ContextMenu_EZC_RestoreZombie")
     else
         jobText = self.target and getText("ContextMenu_EZC_UseZombie") or getText("ContextMenu_EZC_UseSelf")
@@ -67,12 +72,15 @@ end
 function ISEugenesZombieCureAction:complete()
     if not self:isValid() then return false end
     local args = {
-        operation = M.isRestorationItem(self.item) and "restore"
-            or (self.target and "zombie" or "self"),
+        operation = M.isReanimationItem(self.item) and "reanimate"
+            or (M.isRestorationItem(self.item) and "restore"
+            or (self.target and "zombie" or "self")),
         itemId = self.item:getID(),
     }
     if self.target then
-        local targetArgs = M.makeZombieArgs(self.target)
+        local targetArgs = M.isReanimationItem(self.item)
+            and M.makeCorpseArgs(self.target)
+            or M.makeZombieArgs(self.target)
         for key, value in pairs(targetArgs) do args[key] = value end
     end
 
@@ -86,6 +94,7 @@ end
 
 function ISEugenesZombieCureAction:getDuration()
     if self.character:isTimedActionInstant() then return 1 end
+    if M.isReanimationItem(self.item) then return 300 end
     if M.isRestorationItem(self.item) then return 360 end
     return self.target and 240 or 180
 end
