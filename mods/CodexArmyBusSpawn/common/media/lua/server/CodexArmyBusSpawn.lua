@@ -1,6 +1,6 @@
 local MOD_TAG = "[CodexArmyBusSpawn] "
 local STATE_KEY = "CodexArmyBusSpawn_v1"
-local CONFIG_VERSION = 5
+local CONFIG_VERSION = 6
 local VEHICLE_SCRIPT = "Base.ATAArmyBus"
 
 local SPAWN_X = 13705
@@ -15,16 +15,6 @@ local REQUESTED_ITEMS = {
     "MoreTraits.AntiqueJacket",
     "MoreTraits.Slugger",
     "MoreTraits.AntiqueBoots",
-    "Base.BookCarpentry1",
-    "Base.BookCarpentry2",
-    "Base.BookCarpentry3",
-    "ScavengingSkill.BookScavenging2",
-    "ScavengingSkill.BookScavenging3",
-    "ExtraBooks.EBBlunt1",
-    "ExtraBooks.EBBlunt2",
-    "ExtraBooks.EBBlunt3",
-    "ExtraBooks.EBBlunt4",
-    "ExtraBooks.EBBlunt5",
     "Base.Canteen",
     "Base.Hat_WinterHat",
     "Base.Scarf_White",
@@ -43,16 +33,6 @@ local VERSION_2_ITEMS = {
     "Base.GasmaskFilter",
 }
 
-local VERSION_3_ITEMS = {
-    "Base.BookCarpentry2",
-    "Base.BookCarpentry3",
-    "ExtraBooks.EBBlunt1",
-    "ExtraBooks.EBBlunt2",
-    "ExtraBooks.EBBlunt3",
-    "ExtraBooks.EBBlunt4",
-    "ExtraBooks.EBBlunt5",
-}
-
 local VERSION_4_ITEMS = {
     "MoreTraits.Bag_PackerBag",
     "Base.CarBatteryCharger",
@@ -63,8 +43,13 @@ local VERSION_5_REMOVED_ITEMS = {
 }
 
 local REQUESTED_MOVEABLES = {
-    { sprite = "carpentry_01_16", count = 6 },
+    { sprite = "carpentry_01_16", count = 9 },
     { sprite = "location_trailer_02_22", count = 4 },
+    { sprite = "location_community_school_01_12", count = 2 },
+}
+
+local VERSION_6_MOVEABLES = {
+    { sprite = "carpentry_01_16", count = 3 },
     { sprite = "location_community_school_01_12", count = 1 },
 }
 
@@ -161,6 +146,55 @@ local function addMoveable(container, sprite)
     return nil
 end
 
+local function getLevelingBookTypes()
+    local books = {}
+    local scripts = getScriptManager():getAllItems()
+
+    for index = 0, scripts:size() - 1 do
+        local script = scripts:get(index)
+        local skill = script and script:getSkillTrained() or nil
+        local firstLevel = script and tonumber(script:getLevelSkillTrained()) or 0
+
+        -- Proper XP-multiplier books use the five vanilla level bands. Recipe
+        -- magazines, trait books, and boxed book sets do not have SkillTrained.
+        if skill and skill ~= ""
+                and (firstLevel == 1 or firstLevel == 3 or firstLevel == 5
+                    or firstLevel == 7 or firstLevel == 9) then
+            table.insert(books, script:getFullName())
+        end
+    end
+
+    table.sort(books)
+    return books
+end
+
+local function containerHasFullType(container, fullType)
+    local items = container:getItems()
+    for index = 0, items:size() - 1 do
+        if items:get(index):getFullType() == fullType then
+            return true
+        end
+    end
+    return false
+end
+
+local function addMissingLevelingBooks(container)
+    local added = 0
+    local books = getLevelingBookTypes()
+
+    for _, fullType in ipairs(books) do
+        if not containerHasFullType(container, fullType) then
+            if not addFreshItem(container, fullType) then
+                error("Could not create leveling book " .. fullType)
+            end
+            added = added + 1
+        end
+    end
+
+    log("Added " .. tostring(added) .. " missing leveling books from "
+        .. tostring(#books) .. " loaded base-game and mod book definitions.")
+end
+
 local function findRearStorage(vehicle)
     local part = vehicle and vehicle:getPartById("TruckBed") or nil
     return part and part:getItemContainer() or nil
@@ -213,6 +247,8 @@ local function finishVehicle(vehicle)
         end
     end
 
+    addMissingLevelingBooks(rearStorage)
+
     for _, definition in ipairs(REQUESTED_MOVEABLES) do
         for _ = 1, definition.count do
             if not addMoveable(rearStorage, definition.sprite) then
@@ -256,14 +292,6 @@ local function updateExistingBus(state)
         end
     end
 
-    if previousVersion < 3 then
-        for _, fullType in ipairs(VERSION_3_ITEMS) do
-            if not addFreshItem(rearStorage, fullType) then
-                error("Could not add version 3 item " .. fullType .. " to the existing Army Bus")
-            end
-        end
-    end
-
     if previousVersion < 4 then
         for _, fullType in ipairs(VERSION_4_ITEMS) do
             if not addFreshItem(rearStorage, fullType) then
@@ -285,6 +313,20 @@ local function updateExistingBus(state)
                 end
             end
             if removedSpawnedBag then break end
+        end
+    end
+
+
+    if previousVersion < 6 then
+        addMissingLevelingBooks(rearStorage)
+
+        for _, definition in ipairs(VERSION_6_MOVEABLES) do
+            for _ = 1, definition.count do
+                if not addMoveable(rearStorage, definition.sprite) then
+                    error("Could not add version 6 moveable " .. definition.sprite
+                        .. " to the existing Army Bus")
+                end
+            end
         end
     end
 
