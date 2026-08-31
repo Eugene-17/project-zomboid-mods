@@ -1,0 +1,5 @@
+{
+    "Tooltip_EPE_PacifiedZombieCarrier": "Contains a living pacified zombie, its actual equipment, and a physical subject record. Set it down to create a fresh pacified zombie. A zombie left in the world is not preserved across save/load.",
+    "Tooltip_EPE_ZombieDescription": "A readable physical record of a pacified zombie's appearance, worn equipment, and possessions. Keep it with the subject's items so the zombie or restored survivor can be recreated correctly."
+}
+

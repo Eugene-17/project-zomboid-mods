@@ -95,16 +95,18 @@ local function collectTargetEquipment(target)
 end
 
 local function addEquipmentMenus(context, playerObj, target)
-    local targetOption = context:addOption("Manage equipment: " .. M.getTargetName(target))
+    local targetOption = context:addOption(
+        getText("ContextMenu_EPE_ManageEquipment", M.getTargetName(target))
+    )
     local targetMenu = ISContextMenu:getNew(context)
     context:addSubMenu(targetOption, targetMenu)
 
-    local wearOption = targetMenu:addOption("Put on target")
+    local wearOption = targetMenu:addOption(getText("ContextMenu_EPE_PutOnTarget"))
     local wearMenu = ISContextMenu:getNew(targetMenu)
     targetMenu:addSubMenu(wearOption, wearMenu)
     local looseItems = collectLooseWearables(playerObj)
     if #looseItems == 0 then
-        local empty = wearMenu:addOption("No unequipped wearable items")
+        local empty = wearMenu:addOption(getText("ContextMenu_EPE_NoWearableItems"))
         empty.notAvailable = true
     else
         for _, item in ipairs(looseItems) do
@@ -122,12 +124,12 @@ local function addEquipmentMenus(context, playerObj, target)
         end
     end
 
-    local takeOption = targetMenu:addOption("Take off target")
+    local takeOption = targetMenu:addOption(getText("ContextMenu_EPE_TakeOffTarget"))
     local takeMenu = ISContextMenu:getNew(targetMenu)
     targetMenu:addSubMenu(takeOption, takeMenu)
     local targetEquipment = collectTargetEquipment(target)
     if #targetEquipment == 0 then
-        local empty = takeMenu:addOption("No worn equipment")
+        local empty = takeMenu:addOption(getText("ContextMenu_EPE_NoWornEquipment"))
         empty.notAvailable = true
     else
         for _, entry in ipairs(targetEquipment) do

@@ -1,0 +1,19 @@
+{
+    "IGUI_EZC_CureMissing": "The cure is no longer in your inventory.",
+    "IGUI_EZC_PlayerCured": "The Knox infection has been purged. Existing wounds remain.",
+    "IGUI_EZC_ZombieInvalid": "The zombie must still be alive, prone, and within reach.",
+    "IGUI_EZC_ZombiePacified": "The zombie now looks human and has been pacified.",
+    "IGUI_EZC_RestoreInvalid": "Only a living zombie pacified by the Knox cure can be restored.",
+    "IGUI_EZC_RecordMissing": "The physical zombie record could not be created; the serum was not consumed.",
+    "IGUI_EZC_SourceMissing": "The pacified zombie was no longer available; the serum was not consumed.",
+    "IGUI_EZC_SerumMissing": "The restoration serum is no longer in your inventory.",
+    "IGUI_EZC_ProfileUnavailable": "Bandits could not provide a compatible companion profile.",
+    "IGUI_EZC_ConfigureFailed": "The physical zombie record could not be applied to the companion; the serum was not consumed.",
+    "IGUI_EZC_RestorationPending": "This restoration is already waiting for Bandits to finish spawning the companion.",
+    "IGUI_EZC_SpawnRejected": "Bandits rejected the companion spawn; the serum was not consumed.",
+    "IGUI_EZC_SpawnTimedOut": "Bandits did not finish spawning the companion; the serum was not consumed.",
+    "IGUI_EZC_RestorationSuccess": "The restored survivor has joined you as a permanent companion.",
+    "IGUI_EZC_FallbackNameFemale": "Restored Survivor",
+    "IGUI_EZC_FallbackNameMale": "Restored Survivor"
+}
+

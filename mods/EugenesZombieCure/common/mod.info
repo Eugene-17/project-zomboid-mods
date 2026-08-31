@@ -1,5 +1,5 @@
 name=Eugene's Zombie Cure
 id=EugenesZombieCure
-description=Adds a Medical 6 Knox cure and a Medical 10 serum that turns a previously pacified zombie into a permanent Bandits companion.
-require=Bandits2
+description=Adds a Medical 6 Knox cure and a Medical 10 serum that turns a recorded pacified zombie into a permanent Bandits companion.
+require=Bandits2,EugenesProneEquipment
 versionMin=42.20

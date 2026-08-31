@@ -1,13 +1,18 @@
+require "EugenesProneEquipment_Shared"
+
 EugenesZombieCure = EugenesZombieCure or {}
 
 local M = EugenesZombieCure
+local EPE = EugenesProneEquipment
 
 M.MODULE = "EugenesZombieCure"
 M.ITEM_FULL_TYPE = "EugenesZombieCure.ZombieCure"
 M.RESTORATION_ITEM_FULL_TYPE = "EugenesZombieCure.RestorationSerum"
 M.MAX_DISTANCE_SQUARED = 6.25
 
-local appearanceApplied = {}
+local pacifiedThisSession = setmetatable({}, { __mode = "k" })
+local pacifiedAppearanceApplied = setmetatable({}, { __mode = "k" })
+local restoredRecordApplied = setmetatable({}, { __mode = "k" })
 
 function M.isCureItem(item)
     return item and item:getFullType() == M.ITEM_FULL_TYPE
@@ -38,6 +43,7 @@ function M.isPacifiedZombie(zombie)
         and instanceof(zombie, "IsoZombie")
         and not zombie:isDead()
         and zombie:getModData().EugenesZombieCurePacified == true
+        and pacifiedThisSession[zombie] == true
 end
 
 function M.isProneLivingZombie(zombie)
@@ -57,6 +63,7 @@ end
 
 function M.canTreatZombie(playerObj, zombie)
     return M.isProneLivingZombie(zombie)
+        and not M.isRestoredCompanionBrain(zombie:getModData().brain)
         and not M.isPacifiedZombie(zombie)
         and M.isCloseEnough(playerObj, zombie)
 end
@@ -98,7 +105,6 @@ end
 function M.cleanZombieAppearance(zombie, skinName)
     if not zombie then return end
     local humanVisual = zombie:getHumanVisual()
-
     local outfit = humanVisual:getOutfit()
     local skinColor = humanVisual:getSkinColor()
     local bodyHair = humanVisual:getBodyHairIndex()
@@ -121,27 +127,25 @@ function M.cleanZombieAppearance(zombie, skinName)
     if naturalHairColor then humanVisual:setNaturalHairColor(naturalHairColor) end
     if naturalBeardColor then humanVisual:setNaturalBeardColor(naturalBeardColor) end
     if nonAttachedHair then humanVisual:setNonAttachedHair(nonAttachedHair) end
-
     humanVisual:setSkinTextureName(skinName)
     humanVisual:removeBlood()
     humanVisual:removeDirt()
     humanVisual:getBodyVisuals():clear()
     cleanItemVisuals(zombie)
     zombie:resetModelNextFrame()
-    appearanceApplied[zombie] = true
+    pacifiedAppearanceApplied[zombie] = true
 end
 
 function M.pacifyZombie(zombie)
     if not zombie or zombie:isDead() then return end
-    local data = zombie:getModData()
-    data.EugenesZombieCurePacified = true
-
-    if zombie:getTarget() then
-        zombie:setTarget(nil)
-        zombie:clearAggroList()
-        zombie:setTargetSeenTime(0)
-    end
-    if not zombie:isUseless() then zombie:setUseless(true) end
+    pacifiedThisSession[zombie] = true
+    zombie:getModData().EugenesZombieCurePacified = true
+    zombie:setTarget(nil)
+    zombie:clearAggroList()
+    zombie:setTargetSeenTime(0)
+    zombie:setUseless(true)
+    if zombie.setNoTeeth then zombie:setNoTeeth(true) end
+    if zombie.setCanWalk then zombie:setCanWalk(false) end
 end
 
 function M.applyZombieCureState(zombie, skinName)
@@ -153,13 +157,52 @@ function M.applyZombieCureState(zombie, skinName)
     M.pacifyZombie(zombie)
 end
 
+function M.clearPacifiedZombieState(zombie)
+    if not zombie then return end
+    pacifiedThisSession[zombie] = nil
+    pacifiedAppearanceApplied[zombie] = nil
+    local data = zombie:getModData()
+    data.EugenesZombieCurePacified = nil
+    data.EugenesZombieCureSkinName = nil
+end
+
+function M.isRestoredCompanionBrain(brain)
+    return brain and (brain.EugenesZombieCureRestored == true
+        or (type(brain.key) == "string" and string.sub(brain.key, 1, 12) == "ezc-restore-"))
+end
+
+function M.activateRestoredCompanion(zombie, brain)
+    if not zombie or not M.isRestoredCompanionBrain(brain) then return end
+    if not restoredRecordApplied[zombie] then
+        local record = EPE.findZombieRecord(zombie:getInventory())
+        if record and EPE.applyZombieRecord(zombie, record, false) then
+            restoredRecordApplied[zombie] = true
+        end
+    end
+end
+
+function M.clearRestoredRecordCache(zombie)
+    if zombie then restoredRecordApplied[zombie] = nil end
+end
+
 local function onZombieUpdate(zombie)
     if not zombie or zombie:isDead() then return end
     local data = zombie:getModData()
-    if not data.EugenesZombieCurePacified then return end
-
+    local brain = data.brain
+    if M.isRestoredCompanionBrain(brain) then
+        M.activateRestoredCompanion(zombie, brain)
+        return
+    end
+    if data.EugenesZombieCurePacified ~= true then return end
+    if pacifiedThisSession[zombie] ~= true then
+        M.clearPacifiedZombieState(zombie)
+        zombie:setUseless(false)
+        if zombie.setCanWalk then zombie:setCanWalk(true) end
+        if zombie.setNoTeeth then zombie:setNoTeeth(false) end
+        return
+    end
     M.pacifyZombie(zombie)
-    if not appearanceApplied[zombie] and data.EugenesZombieCureSkinName then
+    if not pacifiedAppearanceApplied[zombie] and data.EugenesZombieCureSkinName then
         M.cleanZombieAppearance(zombie, data.EugenesZombieCureSkinName)
     end
 end

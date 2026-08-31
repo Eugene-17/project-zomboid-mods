@@ -35,16 +35,16 @@ module EugenesZombieCure
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep flags[MayDegradeLight],
-            item 1 Base.Scalpel mode:keep flags[MayDegradeLight],
-            item 1 Base.SutureNeedle mode:keep flags[MayDegradeLight],
-            item 1 Base.SutureNeedleHolder mode:keep flags[MayDegradeLight],
-            item 4 Base.Antibiotics,
-            item 1 Base.Pills,
-            item 1 Base.PillsAntiDep,
-            item 1 Base.PillsBeta,
-            item 1 Base.PillsSleepingTablets,
-            item 1 Base.PillsVitamins,
-            item 1 Base.AlcoholWipes,
+            item 1 [Base.Scalpel] mode:keep flags[MayDegradeLight],
+            item 1 [Base.SutureNeedle] mode:keep flags[MayDegradeLight],
+            item 1 [Base.SutureNeedleHolder] mode:keep flags[MayDegradeLight],
+            item 4 [Base.Antibiotics],
+            item 1 [Base.Pills],
+            item 1 [Base.PillsAntiDep],
+            item 1 [Base.PillsBeta],
+            item 1 [Base.PillsSleepingTablets],
+            item 1 [Base.PillsVitamins],
+            item 1 [Base.AlcoholWipes],
         }
         outputs
         {
@@ -65,17 +65,17 @@ module EugenesZombieCure
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep flags[MayDegradeLight],
-            item 1 Base.Scalpel mode:keep flags[MayDegradeLight],
-            item 1 Base.SutureNeedle mode:keep flags[MayDegradeLight],
-            item 1 Base.SutureNeedleHolder mode:keep flags[MayDegradeLight],
-            item 2 EugenesZombieCure.ZombieCure,
-            item 4 Base.Antibiotics,
-            item 2 Base.Pills,
-            item 2 Base.PillsAntiDep,
-            item 2 Base.PillsBeta,
-            item 2 Base.PillsSleepingTablets,
-            item 2 Base.PillsVitamins,
-            item 2 Base.AlcoholWipes,
+            item 1 [Base.Scalpel] mode:keep flags[MayDegradeLight],
+            item 1 [Base.SutureNeedle] mode:keep flags[MayDegradeLight],
+            item 1 [Base.SutureNeedleHolder] mode:keep flags[MayDegradeLight],
+            item 2 [EugenesZombieCure.ZombieCure],
+            item 4 [Base.Antibiotics],
+            item 2 [Base.Pills],
+            item 2 [Base.PillsAntiDep],
+            item 2 [Base.PillsBeta],
+            item 2 [Base.PillsSleepingTablets],
+            item 2 [Base.PillsVitamins],
+            item 2 [Base.AlcoholWipes],
         }
         outputs
         {

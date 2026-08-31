@@ -3,6 +3,7 @@ require "TimedActions/ISEugenesZombieCureAction"
 require "EugenesZombieCure_Shared"
 
 local M = EugenesZombieCure
+local pendingPacifiedZombies = {}
 
 local function beginTreatment(playerObj, item, zombie)
     if not playerObj or not M.hasTreatmentItem(playerObj, item) then return end
@@ -95,8 +96,13 @@ end
 local function onServerCommand(module, command, args)
     if module ~= M.MODULE or not args then return end
     if command == "zombieCured" then
-        local zombie = findZombieByOnlineId(tonumber(args.targetId))
-        if zombie and args.skinName then M.applyZombieCureState(zombie, args.skinName) end
+        local targetId = tonumber(args.targetId)
+        local zombie = findZombieByOnlineId(targetId)
+        if zombie and args.skinName then
+            M.applyZombieCureState(zombie, args.skinName)
+        elseif targetId and args.skinName then
+            pendingPacifiedZombies[targetId] = args.skinName
+        end
     elseif command == "result" and args.message then
         local playerObj = getPlayer()
         if playerObj then
@@ -105,6 +111,16 @@ local function onServerCommand(module, command, args)
     end
 end
 
+local function applyPendingPacification(zombie)
+    if not zombie then return end
+    local targetId = zombie:getOnlineID()
+    local skinName = pendingPacifiedZombies[targetId]
+    if not skinName then return end
+    pendingPacifiedZombies[targetId] = nil
+    M.applyZombieCureState(zombie, skinName)
+end
+
 Events.OnFillInventoryObjectContextMenu.Add(onFillInventoryObjectContextMenu)
 Events.OnFillWorldObjectContextMenu.Add(onFillWorldObjectContextMenu)
 Events.OnServerCommand.Add(onServerCommand)
+Events.OnZombieUpdate.Add(applyPendingPacification)

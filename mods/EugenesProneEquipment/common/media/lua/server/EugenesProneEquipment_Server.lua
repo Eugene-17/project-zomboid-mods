@@ -2,19 +2,11 @@ require "EugenesProneEquipment_Shared"
 
 local M = EugenesProneEquipment
 
-local function colorSnapshot(color)
-    if not color then return nil end
-    return {
-        r = color:getRedFloat(),
-        g = color:getGreenFloat(),
-        b = color:getBlueFloat(),
-        a = color:getAlphaFloat(),
-    }
-end
-
-local function colorFromSnapshot(color)
-    if not color then return nil end
-    return ImmutableColor.new(color.r or 1, color.g or 1, color.b or 1, color.a or 1)
+local function getZombieCureApi()
+    if not EugenesZombieCure or not EugenesZombieCure.applyZombieCureState then
+        pcall(require, "EugenesZombieCure_Shared")
+    end
+    return EugenesZombieCure
 end
 
 local function notify(playerObj, message, ok)
@@ -37,28 +29,21 @@ end
 local function resolveTarget(args)
     local onlineId = tonumber(args.targetId)
     if not onlineId then return nil end
-    if args.targetKind == "player" then
-        return getPlayerByOnlineID(onlineId)
-    end
-    if args.targetKind == "zombie" then
-        return findZombieByOnlineId(onlineId)
-    end
+    if args.targetKind == "player" then return getPlayerByOnlineID(onlineId) end
+    if args.targetKind == "zombie" then return findZombieByOnlineId(onlineId) end
     return nil
 end
 
 local function ensureZombieInventory(zombie)
     local data = zombie:getModData()
-    if not data.EugenesProneEquipmentInitialized then
+    if data.EugenesProneEquipmentInitialized then return end
+    local cureApi = getZombieCureApi()
+    local brain = data.brain
+    if not (cureApi and cureApi.isRestoredCompanionBrain
+        and cureApi.isRestoredCompanionBrain(brain)) then
         zombie:DoZombieInventory()
-        data.EugenesProneEquipmentInitialized = true
     end
-end
-
-local function rebuildZombieVisuals(zombie)
-    local visuals = zombie:getItemVisuals()
-    visuals:clear()
-    zombie:getWornItems():getItemVisuals(visuals)
-    zombie:resetModelNextFrame()
+    data.EugenesProneEquipmentInitialized = true
 end
 
 local function makeZombieVisualSnapshot(zombie)
@@ -87,8 +72,44 @@ local function makeZombieVisualSnapshot(zombie)
     return result
 end
 
+local function refreshPhysicalRecord(zombie)
+    local inventory = zombie:getInventory()
+    local record = M.findZombieRecord(inventory)
+    local cureApi = getZombieCureApi()
+    local id = zombie:getPersistentOutfitID()
+    local cluster = GetBanditClusterData and GetBanditClusterData(id) or nil
+    local brain = zombie:getModData().brain or (cluster and cluster[id])
+    local restored = cureApi and cureApi.isRestoredCompanionBrain
+        and cureApi.isRestoredCompanionBrain(brain)
+
+    if record or restored then
+        record = M.createOrUpdateZombieRecord(zombie)
+        if not record then return end
+    end
+    if restored and brain then
+        brain.EugenesZombieCureRestored = true
+        brain.EugenesZombieCureSnapshot = nil
+        if type(brain.key) == "string" and string.sub(brain.key, 1, 12) == "ezc-restore-" then
+            brain.key = nil
+        end
+        zombie:getModData().brain = brain
+        if cluster then
+            cluster[id] = brain
+            if TransmitBanditCluster then TransmitBanditCluster(id) end
+        end
+        if Bandit and Bandit.UpdateItemsToSpawnAtDeath then
+            Bandit.UpdateItemsToSpawnAtDeath(zombie, brain)
+        end
+        if cureApi.clearRestoredRecordCache then cureApi.clearRestoredRecordCache(zombie) end
+    end
+end
+
 local function syncZombieVisuals(zombie)
-    rebuildZombieVisuals(zombie)
+    local visuals = zombie:getItemVisuals()
+    visuals:clear()
+    zombie:getWornItems():getItemVisuals(visuals)
+    zombie:resetModelNextFrame()
+    refreshPhysicalRecord(zombie)
     if isServer() then
         sendServerCommand(M.MODULE, "zombieVisuals", {
             targetId = zombie:getOnlineID(),
@@ -98,51 +119,6 @@ local function syncZombieVisuals(zombie)
             visuals = makeZombieVisualSnapshot(zombie),
         })
     end
-end
-
-local function makeAppearanceSnapshot(zombie)
-    local visual = zombie:getHumanVisual()
-    return {
-        female = zombie:isFemale(),
-        skinTextureName = visual:getSkinTexture(),
-        bodyHairIndex = visual:getBodyHairIndex(),
-        hairModel = visual:getHairModel(),
-        beardModel = visual:getBeardModel(),
-        nonAttachedHair = visual:getNonAttachedHair(),
-        skinColor = colorSnapshot(visual:getSkinColor()),
-        hairColor = colorSnapshot(visual:getHairColor()),
-        beardColor = colorSnapshot(visual:getBeardColor()),
-        naturalHairColor = colorSnapshot(visual:getNaturalHairColor()),
-        naturalBeardColor = colorSnapshot(visual:getNaturalBeardColor()),
-        health = zombie:getHealth(),
-    }
-end
-
-local function applyAppearanceSnapshot(zombie, snapshot)
-    snapshot = snapshot or {}
-    local visual = zombie:getHumanVisual()
-    visual:clear()
-    local skinColor = colorFromSnapshot(snapshot.skinColor)
-    local hairColor = colorFromSnapshot(snapshot.hairColor)
-    local beardColor = colorFromSnapshot(snapshot.beardColor)
-    local naturalHairColor = colorFromSnapshot(snapshot.naturalHairColor)
-    local naturalBeardColor = colorFromSnapshot(snapshot.naturalBeardColor)
-    if skinColor then visual:setSkinColor(skinColor) end
-    if snapshot.bodyHairIndex and snapshot.bodyHairIndex >= 0 then
-        visual:setBodyHairIndex(snapshot.bodyHairIndex)
-    end
-    if snapshot.hairModel then visual:setHairModel(snapshot.hairModel) end
-    if snapshot.beardModel then visual:setBeardModel(snapshot.beardModel) end
-    if snapshot.nonAttachedHair then visual:setNonAttachedHair(snapshot.nonAttachedHair) end
-    if hairColor then visual:setHairColor(hairColor) end
-    if beardColor then visual:setBeardColor(beardColor) end
-    if naturalHairColor then visual:setNaturalHairColor(naturalHairColor) end
-    if naturalBeardColor then visual:setNaturalBeardColor(naturalBeardColor) end
-    if snapshot.skinTextureName then visual:setSkinTextureName(snapshot.skinTextureName) end
-    visual:removeBlood()
-    visual:removeDirt()
-    visual:getBodyVisuals():clear()
-    if snapshot.health then zombie:setHealth(math.max(0.1, snapshot.health)) end
 end
 
 local function moveItem(item, destination)
@@ -165,24 +141,11 @@ local function moveAllItemsWithoutSync(source, destination)
     end
 end
 
-local function makeWornSnapshot(zombie)
-    local rows = {}
-    local wornItems = zombie:getWornItems()
-    for index = 0, wornItems:size() - 1 do
-        local item = wornItems:getItemByIndex(index)
-        local location = wornItems:getLocation(item)
-        if item and location then
-            rows[#rows + 1] = {
-                itemId = item:getID(),
-                location = tostring(location),
-            }
-        end
-    end
-    return rows
-end
-
 local function removeZombieFromWorld(zombie)
-    zombie:getModData().EugenesZombieCurePacified = nil
+    local cureApi = getZombieCureApi()
+    if cureApi and cureApi.clearPacifiedZombieState then
+        cureApi.clearPacifiedZombieState(zombie)
+    end
     zombie:removeFromWorld()
     zombie:removeFromSquare()
     zombie:setSquare(nil)
@@ -202,32 +165,28 @@ end
 
 local function pickupPacifiedZombie(playerObj, zombie)
     if not M.canCarryZombie(playerObj, zombie) then
-        notify(playerObj, "Only a living pacified zombie within reach can be carried.", false)
+        notify(playerObj, getText("IGUI_EPE_CarryInvalid"), false)
         return
     end
-
     ensureZombieInventory(zombie)
+
+    local record = M.createOrUpdateZombieRecord(zombie)
+    if not record then
+        notify(playerObj, getText("IGUI_EPE_RecordCreateFailed"), false)
+        return
+    end
     local carrier = instanceItem(M.CARRIER_FULL_TYPE)
     if not carrier or not instanceof(carrier, "InventoryContainer") then
-        notify(playerObj, "The pacified-zombie carrier item could not be created.", false)
+        notify(playerObj, getText("IGUI_EPE_CarrierCreateFailed"), false)
         return
     end
 
-    local data = carrier:getModData()
-    data.EugenesProneEquipmentHasZombie = true
-    data.EugenesProneEquipmentAppearance = makeAppearanceSnapshot(zombie)
-    data.EugenesProneEquipmentWorn = makeWornSnapshot(zombie)
-    data.EugenesZombieCureSkinName = zombie:getModData().EugenesZombieCureSkinName
-
-    carrier:setName(getText("ItemName_EugenesProneEquipment.PacifiedZombieCarrier"))
-    carrier:setCustomName(true)
     moveAllItemsWithoutSync(zombie:getInventory(), carrier:getInventory())
     playerObj:getInventory():AddItem(carrier)
     if isServer() then sendAddItemToContainer(playerObj:getInventory(), carrier) end
-
     removeZombieFromWorld(zombie)
     equipCarrier(playerObj, carrier)
-    notify(playerObj, "The pacified zombie is secured in both hands.", true)
+    notify(playerObj, getText("IGUI_EPE_CarrierSecured"), true)
 end
 
 local function validDropSquare(playerObj, args)
@@ -249,55 +208,148 @@ local function findItemById(container, itemId)
     return container:getItemWithIDRecursiv(tonumber(itemId))
 end
 
-local function spawnStoredZombie(playerObj, carrier, square)
+local function markLegacyWornItems(container, rows)
+    local items = container:getItems()
+    local used = {}
+    local normalized = {}
+    for _, row in ipairs(rows or {}) do
+        for index = 0, items:size() - 1 do
+            local item = items:get(index)
+            local location = M.getWearLocation(item)
+            local typeMatches = not row.fullType or item:getFullType() == row.fullType
+            local locationMatches = not row.location
+                or (location and tostring(location) == tostring(row.location))
+            if not used[item] and typeMatches and locationMatches then
+                if location then
+                    location = M.resolveWearLocation(row.location, item) or location
+                    local data = item:getModData()
+                    data.EugenesZombieRecordWorn = true
+                    data.EugenesZombieRecordWearLocation = tostring(location)
+                    data.preserve = true
+                    local normalizedRow = {
+                        fullType = item:getFullType(),
+                        displayName = item:getDisplayName(),
+                        location = tostring(location),
+                        banditLocation = location:getTranslationName(),
+                    }
+                    local visual = item:getVisual()
+                    if visual then
+                        normalizedRow.hue = visual:getHue()
+                        normalizedRow.baseTexture = visual:getBaseTexture()
+                        normalizedRow.textureChoice = visual:getTextureChoice()
+                        local tint = visual:getTint()
+                        if tint then
+                            normalizedRow.tint = {
+                                r = tint:getRedFloat(),
+                                g = tint:getGreenFloat(),
+                                b = tint:getBlueFloat(),
+                                a = tint:getAlphaFloat(),
+                            }
+                        end
+                    end
+                    normalized[#normalized + 1] = normalizedRow
+                    used[item] = true
+                    break
+                end
+            end
+        end
+    end
+    return normalized
+end
+
+local function migrateLegacyCarrier(carrier)
+    local inventory = carrier:getInventory()
+    local record = M.findZombieRecord(inventory)
+    if record then return record end
     local data = carrier:getModData()
-    local appearance = data.EugenesProneEquipmentAppearance or {}
-    local femaleChance = appearance.female and 100 or 0
+    if data.EugenesProneEquipmentHasZombie ~= true then return nil end
+    local snapshot = {
+        schemaVersion = M.RECORD_SCHEMA_VERSION,
+        appearance = data.EugenesProneEquipmentAppearance or {},
+        worn = markLegacyWornItems(inventory, data.EugenesProneEquipmentWorn),
+        visuals = data.EugenesProneEquipmentVisuals or {},
+    }
+    record = M.createZombieRecordFromSnapshot(snapshot, inventory)
+    if record then
+        data.EugenesProneEquipmentHasZombie = nil
+        data.EugenesProneEquipmentAppearance = nil
+        data.EugenesProneEquipmentWorn = nil
+        data.EugenesProneEquipmentVisuals = nil
+        data.EugenesZombieCurePacified = nil
+        data.EugenesZombieCureSkinName = nil
+    end
+    return record
+end
+
+local function removeSpawnedZombie(zombie)
+    if not zombie then return end
+    zombie:removeFromWorld()
+    zombie:removeFromSquare()
+    zombie:setSquare(nil)
+end
+
+local function spawnStoredZombie(carrier, square)
+    local record = migrateLegacyCarrier(carrier)
+    if not record then return nil, "record" end
+    local snapshot = M.getZombieRecordSnapshot(record)
+    if not snapshot or not snapshot.appearance then return nil, "record" end
+
+    local femaleChance = snapshot.appearance.female and 100 or 0
     local spawned = addZombiesInOutfit(
-        square:getX(), square:getY(), square:getZ(), 1, nil, femaleChance,
-        false, false, false, true
+        square:getX(), square:getY(), square:getZ(), 1, nil, femaleChance
     )
     local zombie = spawned and spawned:size() > 0 and spawned:get(0) or nil
-    if not zombie then return nil end
+    if not zombie then return nil, "spawn" end
 
     zombie:clearWornItems()
     zombie:getInventory():removeAllItems()
-    applyAppearanceSnapshot(zombie, appearance)
     moveAllItemsWithoutSync(carrier:getInventory(), zombie:getInventory())
-
-    for _, row in ipairs(data.EugenesProneEquipmentWorn or {}) do
-        local item = findItemById(zombie:getInventory(), row.itemId)
-        local location = M.getWearLocation(item)
-        if item and location then zombie:setWornItem(location, item, false) end
+    local cureApi = getZombieCureApi()
+    local skinName = snapshot.appearance.skinTextureName
+    local ok, result = pcall(function()
+        if cureApi and cureApi.applyZombieCureState then
+            cureApi.applyZombieCureState(zombie, skinName)
+        else
+            error("Zombie Cure API unavailable")
+        end
+        if not M.applyZombieRecord(zombie, record, true) then
+            error("Zombie record could not be applied")
+        end
+    end)
+    if not ok then
+        print("[EugenesProneEquipment] set-down failed: " .. tostring(result))
+        moveAllItemsWithoutSync(zombie:getInventory(), carrier:getInventory())
+        removeSpawnedZombie(zombie)
+        return nil, "spawn"
     end
 
-    local skinName = data.EugenesZombieCureSkinName or appearance.skinTextureName
-    local zombieData = zombie:getModData()
-    zombieData.EugenesZombieCurePacified = true
-    zombieData.EugenesZombieCureSkinName = skinName
-    zombieData.EugenesProneEquipmentInitialized = true
-    if zombie:getTarget() then zombie:setTarget(nil) end
-    zombie:clearAggroList()
-    zombie:setTargetSeenTime(0)
-    zombie:setUseless(true)
+    zombie:getModData().EugenesProneEquipmentInitialized = true
+    if zombie.transmitModData then pcall(zombie.transmitModData, zombie) end
     syncZombieVisuals(zombie)
+    if isServer() then
+        sendServerCommand(cureApi.MODULE, "zombieCured", {
+            targetId = zombie:getOnlineID(),
+            skinName = skinName,
+        })
+    end
     return zombie
 end
 
 local function setDownPacifiedZombie(playerObj, carrier, args)
     if not M.hasZombieCarrier(playerObj, carrier) then
-        notify(playerObj, "The carried pacified zombie must be in your inventory.", false)
+        notify(playerObj, getText("IGUI_EPE_CarrierMissing"), false)
         return
     end
     local square = validDropSquare(playerObj, args)
     if not square then
-        notify(playerObj, "There is no safe nearby square on which to set it down.", false)
+        notify(playerObj, getText("IGUI_EPE_NoSafeDropSquare"), false)
         return
     end
 
-    local zombie = spawnStoredZombie(playerObj, carrier, square)
+    local zombie, failure = spawnStoredZombie(carrier, square)
     if not zombie then
-        notify(playerObj, "The pacified zombie could not be restored here.", false)
+        local key = failure == "record" and "IGUI_EPE_RecordInvalid" or "IGUI_EPE_SetDownFailed"
+        notify(playerObj, getText(key), false)
         return
     end
 
@@ -313,62 +365,61 @@ local function setDownPacifiedZombie(playerObj, carrier, args)
         sendEquip(playerObj)
         sendServerCommand(playerObj, M.MODULE, "clearCarrier", { itemId = itemId })
     end
-    notify(playerObj, "The pacified zombie was set down safely.", true)
+    notify(playerObj, getText("IGUI_EPE_SetDownSuccess"), true)
 end
 
 local function wearOnTarget(playerObj, target, args)
     local itemId = tonumber(args.itemId)
     local item = itemId and playerObj:getInventory():getItemWithIDRecursiv(itemId) or nil
     if not M.isLooseWearable(playerObj, item) then
-        notify(playerObj, "That item must be loose in your inventory, not worn, held, or attached.", false)
+        notify(playerObj, getText("IGUI_EPE_ItemMustBeLoose"), false)
         return
     end
-
     local location = M.getWearLocation(item)
     if not location then
-        notify(playerObj, "That item cannot be worn.", false)
+        notify(playerObj, getText("IGUI_EPE_ItemCannotBeWorn"), false)
         return
     end
-
     if instanceof(target, "IsoZombie") then ensureZombieInventory(target) end
     if not moveItem(item, target:getInventory()) then
-        notify(playerObj, "The item could not be moved to the target.", false)
+        notify(playerObj, getText("IGUI_EPE_ItemMoveFailed"), false)
         return
     end
-
     target:setWornItem(location, item, false)
     if instanceof(target, "IsoZombie") then syncZombieVisuals(target) end
-    notify(playerObj, item:getDisplayName() .. " was put on " .. M.getTargetName(target) .. ".", true)
+    notify(
+        playerObj,
+        getText("IGUI_EPE_ItemPutOn", item:getDisplayName(), M.getTargetName(target)),
+        true
+    )
 end
 
 local function takeFromTarget(playerObj, target, args)
     if instanceof(target, "IsoZombie") then ensureZombieInventory(target) end
     local item = M.findWornItem(target, args.location, args.fullType)
     if not item then
-        notify(playerObj, "That equipment is no longer worn by the target.", false)
+        notify(playerObj, getText("IGUI_EPE_ItemNoLongerWorn"), false)
         return
     end
-
     target:removeWornItem(item, false)
+    M.clearRecordWearMarker(item)
     if not moveItem(item, playerObj:getInventory()) then
         local location = M.getWearLocation(item)
         if location then target:setWornItem(location, item, false) end
-        notify(playerObj, "The equipment could not be transferred.", false)
+        notify(playerObj, getText("IGUI_EPE_ItemTransferFailed"), false)
         return
     end
-
     if instanceof(target, "IsoZombie") then syncZombieVisuals(target) end
-    notify(playerObj, item:getDisplayName() .. " was moved into your inventory.", true)
+    notify(playerObj, getText("IGUI_EPE_ItemMovedToInventory", item:getDisplayName()), true)
 end
 
 function M.handleRequest(playerObj, args, directTarget)
     if not playerObj or not args then return end
     local target = directTarget or resolveTarget(args)
     if not M.canInteract(playerObj, target) then
-        notify(playerObj, "The target must still be alive, prone, and within reach.", false)
+        notify(playerObj, getText("IGUI_EPE_TargetInvalid"), false)
         return
     end
-
     if args.operation == "wear" then
         wearOnTarget(playerObj, target, args)
     elseif args.operation == "take" then
@@ -379,8 +430,7 @@ end
 function M.handleCarryRequest(playerObj, args, directTarget)
     if not playerObj or not args then return end
     if args.operation == "pickup" then
-        local zombie = directTarget or resolveTarget(args)
-        pickupPacifiedZombie(playerObj, zombie)
+        pickupPacifiedZombie(playerObj, directTarget or resolveTarget(args))
     elseif args.operation == "setdown" then
         local carrier = findItemById(playerObj:getInventory(), args.itemId)
         setDownPacifiedZombie(playerObj, carrier, args)

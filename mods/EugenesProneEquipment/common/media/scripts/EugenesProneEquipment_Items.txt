@@ -1,5 +1,19 @@
 module EugenesProneEquipment
 {
+    item ZombieDescription
+    {
+        DisplayCategory = Literature,
+        ItemType = base:literature,
+        Weight = 0.1,
+        Icon = Paper,
+        CanBeWrite = true,
+        PageToWrite = 1,
+        StaticModel = SheetOfPaper,
+        WorldStaticModel = SheetOfPaper,
+        ReadType = newspaper,
+        Tooltip = Tooltip_EPE_ZombieDescription,
+    }
+
     item PacifiedZombieCarrier
     {
         DisplayCategory = Container,
