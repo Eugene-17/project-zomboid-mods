@@ -6,7 +6,7 @@ A collection of personal Project Zomboid Build 42 mods maintained by Eugene-17.
 
 ### Eugene's Army Bus Spawn
 
-Spawns one fully repaired Autotsar Army Bus at `13705,1793,0` once per save. The bus has a curated clean inventory, nine wooden crates, two student bench/tables, no fuel, and a 100%-condition battery at 0% charge. It dynamically includes Volumes I-V of every standard leveling-book series loaded from the base game and enabled mods, while excluding recipe and trait-granting literature. PROJECT RV Interior terrain is left unchanged, so farmable dirt must be moved into the RV area manually.
+Spawns one fully repaired Autotsar Army Bus at `13705,1793,0` once per save. The bus has a curated clean inventory, nine wooden crates, two student bench/tables, no fuel, and a 100%-condition battery at 0% charge. It dynamically includes packed sets for every loaded leveling-book series that provides one, retaining loose Volumes I-V only for mod skills without a packed set; recipe and trait-granting literature remain excluded. PROJECT RV Interior terrain is left unchanged, so farmable dirt must be moved into the RV area manually.
 
 Dependencies: Autotsar Tuning Atelier Bus, More Traits, and Project RV Interior. Compatible leveling books from optional mods such as Scavenging Skill, Extra Books, and RadArchery are included automatically when those mods are enabled.
 
@@ -39,6 +39,12 @@ Right-click a nearby living zombie or another player while they are knocked down
 Adds a two-stage endgame treatment. The Medical 6 Knox Infection Cure removes player zombification without healing wounds, or restores and pacifies a prone zombie. A pacified zombie left in the world is intentionally not tracked across save/load; secure it in the carrier when it must persist. It awards 165 base Medical XP per craft, balanced so twelve doses with First Aid Volumes 4 and 5 take a character from Medical 6 to roughly Medical 10. The more expensive Medical 10 Human Restoration Serum writes the same physical zombie record, transfers the actual items, and creates a named, permanent, loyal Bandits companion from them.
 
 Dependency: Bandits 2.
+
+### Eugene's Auto Unwanted
+
+Automatically marks newly looted clothing, tools, firearms, books (including recipe literature), artifacts, and cooking utensils as Unwanted. Its six World Settings checkboxes default to enabled, and transfers between the player's own inventory containers are ignored.
+
+Dependency: Organized Categories: Core.
 
 ## Installation
 

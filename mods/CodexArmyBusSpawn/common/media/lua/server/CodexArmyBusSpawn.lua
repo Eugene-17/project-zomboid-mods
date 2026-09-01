@@ -22,14 +22,12 @@ local REQUESTED_ITEMS = {
     "Base.FlashLight_AngleHead_Army",
     "MoreTraits.Thumper",
     "Base.Belt2",
-    "Base.Hat_GasMask_nofilter",
     "Base.GasmaskFilter",
     "MoreTraits.Bag_PackerBag",
     "Base.CarBatteryCharger",
 }
 
 local VERSION_2_ITEMS = {
-    "Base.Hat_GasMask_nofilter",
     "Base.GasmaskFilter",
 }
 
@@ -168,6 +166,28 @@ local function getLevelingBookTypes()
     return books
 end
 
+local function getPackedLevelingBookTypes()
+    local packedBooks = {}
+    local packedModules = {}
+    local scripts = getScriptManager():getAllItems()
+
+    for index = 0, scripts:size() - 1 do
+        local script = scripts:get(index)
+        if script and script:getDoubleClickRecipe() == "UnpackSetOfBooks" then
+            local fullType = script:getFullName()
+            table.insert(packedBooks, fullType)
+
+            local moduleName = string.match(fullType, "^([^%.]+)%.")
+            if moduleName then
+                packedModules[moduleName] = true
+            end
+        end
+    end
+
+    table.sort(packedBooks)
+    return packedBooks, packedModules
+end
+
 local function containerHasFullType(container, fullType)
     local items = container:getItems()
     for index = 0, items:size() - 1 do
@@ -178,7 +198,40 @@ local function containerHasFullType(container, fullType)
     return false
 end
 
-local function addMissingLevelingBooks(container)
+local function addMissingBusBooks(container)
+    local added = 0
+    local packedBooks, packedModules = getPackedLevelingBookTypes()
+    local books = {}
+
+    for _, fullType in ipairs(packedBooks) do
+        table.insert(books, fullType)
+    end
+
+    -- Keep individual volumes only for loaded skills whose mod does not
+    -- provide an unpackable set item.
+    for _, fullType in ipairs(getLevelingBookTypes()) do
+        local moduleName = string.match(fullType, "^([^%.]+)%.")
+        if not moduleName or not packedModules[moduleName] then
+            table.insert(books, fullType)
+        end
+    end
+
+    table.sort(books)
+
+    for _, fullType in ipairs(books) do
+        if not containerHasFullType(container, fullType) then
+            if not addFreshItem(container, fullType) then
+                error("Could not create bus book item " .. fullType)
+            end
+            added = added + 1
+        end
+    end
+
+    log("Added " .. tostring(added) .. " missing packed book sets or unpacked fallback volumes from "
+        .. tostring(#books) .. " loaded base-game and mod book definitions.")
+end
+
+local function addMissingLooseLevelingBooks(container)
     local added = 0
     local books = getLevelingBookTypes()
 
@@ -247,7 +300,7 @@ local function finishVehicle(vehicle)
         end
     end
 
-    addMissingLevelingBooks(rearStorage)
+    addMissingBusBooks(rearStorage)
 
     for _, definition in ipairs(REQUESTED_MOVEABLES) do
         for _ = 1, definition.count do
@@ -318,7 +371,8 @@ local function updateExistingBus(state)
 
 
     if previousVersion < 6 then
-        addMissingLevelingBooks(rearStorage)
+        -- Preserve the original version-6 migration for existing buses.
+        addMissingLooseLevelingBooks(rearStorage)
 
         for _, definition in ipairs(VERSION_6_MOVEABLES) do
             for _ = 1, definition.count do

@@ -1,0 +1,43 @@
+VERSION = 1,
+
+option EugenesAutoUnwanted.Enabled
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_Enabled,
+}
+
+option EugenesAutoUnwanted.Clothing
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_Clothing,
+}
+
+option EugenesAutoUnwanted.Tools
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_Tools,
+}
+
+option EugenesAutoUnwanted.Firearms
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_Firearms,
+}
+
+option EugenesAutoUnwanted.Books
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_Books,
+}
+
+option EugenesAutoUnwanted.Artifacts
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_Artifacts,
+}
+
+option EugenesAutoUnwanted.CookingUtensils
+{
+    type = boolean, default = true,
+    page = EugenesAutoUnwanted, translation = EAU_CookingUtensils,
+}

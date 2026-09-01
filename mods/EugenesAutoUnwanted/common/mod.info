@@ -1,0 +1,5 @@
+name=Eugene's Auto Unwanted
+id=EugenesAutoUnwanted
+description=Automatically marks newly looted clothing, tools, firearms, books, artifacts, and cooking utensils as Unwanted using Organized Categories.
+require=organizedCategories_core
+versionMin=42.20
