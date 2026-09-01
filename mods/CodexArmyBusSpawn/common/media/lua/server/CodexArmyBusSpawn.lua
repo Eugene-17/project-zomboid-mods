@@ -1,3 +1,5 @@
+require "Tuning2/ATATuning2Commands"
+
 local MOD_TAG = "[CodexArmyBusSpawn] "
 local STATE_KEY = "CodexArmyBusSpawn_v1"
 local CONFIG_VERSION = 6
@@ -12,44 +14,76 @@ local REQUESTED_ITEMS = {
     "Base.Bag_Satchel_Military",
     "Base.Glasses_Normal",
     "Base.Trousers_CamoGreen",
-    "MoreTraits.AntiqueJacket",
-    "MoreTraits.Slugger",
-    "MoreTraits.AntiqueBoots",
     "Base.Canteen",
     "Base.Hat_WinterHat",
     "Base.Scarf_White",
     "Base.Gloves_LeatherGlovesBlack",
     "Base.FlashLight_AngleHead_Army",
-    "MoreTraits.Thumper",
     "Base.Belt2",
-    "Base.GasmaskFilter",
-    "MoreTraits.Bag_PackerBag",
-    "Base.CarBatteryCharger",
+    "Base.SledgehammerHead",
+    "Base.Crowbar",
+    "Base.RubberHose",
+    "Base.Hammer",
+    "Base.Saw",
+    "Base.BoltCutters",
+    "Base.ComfreyCataplasm",
 }
 
-local VERSION_2_ITEMS = {
-    "Base.GasmaskFilter",
+local OPTIONAL_ITEMS = {
+    "MoreTraits.AntiqueJacket",
+    "MoreTraits.Slugger",
+    "MoreTraits.AntiqueBoots",
+    "MoreTraits.Bag_PackerBag",
 }
 
-local VERSION_4_ITEMS = {
-    "MoreTraits.Bag_PackerBag",
-    "Base.CarBatteryCharger",
-}
+local VERSION_2_ITEMS = {}
+
+local VERSION_4_ITEMS = {}
 
 local VERSION_5_REMOVED_ITEMS = {
     "Base.Bag_ALICEpack_Army",
 }
 
 local REQUESTED_MOVEABLES = {
-    { sprite = "carpentry_01_16", count = 9 },
-    { sprite = "location_trailer_02_22", count = 4 },
-    { sprite = "location_community_school_01_12", count = 2 },
-}
-
-local VERSION_6_MOVEABLES = {
-    { sprite = "carpentry_01_16", count = 3 },
+    { sprite = "carpentry_01_16", count = 1 },
     { sprite = "location_community_school_01_12", count = 1 },
 }
+
+local FULL_BOOK_SERIES = {
+    { skill = "Foraging", packed = "Base.BookForagingSet" },
+    { skill = "Blunt", packed = "CodexArmyBusSpawn.BookLongBluntSet" },
+    { skill = "Carpentry", packed = "Base.BookCarpentrySet" },
+    { skill = "Tailoring", packed = "Base.BookTailoringSet" },
+    { skill = "Scavenging" },
+    { skill = "Fitness", packed = "ExtraBooks.EBSetFitness" },
+    { skill = "Strength", packed = "ExtraBooks.EBSetStrength" },
+}
+
+local TWO_VOLUME_SKILLS = {
+    Carving = true,
+    Cooking = true,
+    Electricity = true,
+    Farming = true,
+    FirstAid = true,
+    FlintKnapping = true,
+    Glassmaking = true,
+    Masonry = true,
+    Mechanics = true,
+    MetalWelding = true,
+    Blacksmith = true,
+    Pottery = true,
+    Husbandry = true,
+    Butchering = true,
+    Nimble = true,
+    Sprinting = true,
+    Lightfooted = true,
+    Sneaking = true,
+    Maintenance = true,
+    Aiming = true,
+    Reloading = true,
+}
+
+local VERSION_6_MOVEABLES = {}
 
 local ticks = 0
 local loggedMissingItem = false
@@ -112,6 +146,46 @@ local function prepareStorageAndDoors(vehicle)
     return rearStorage
 end
 
+local function configureBodyAndRoofRack(vehicle)
+    -- Army Bus skin 0 is the plain default texture. Skin 1 is the painted
+    -- variant with side lettering.
+    vehicle:setSkinIndex(0)
+    vehicle:updateSkin()
+    if vehicle.transmitSkinIndex then vehicle:transmitSkinIndex() end
+
+    local roofRack = vehicle:getPartById("ATA2InteractiveTrunkRoofRack")
+    if not roofRack then
+        error("Army Bus has no Autotsar roof-rack tuning part")
+    end
+
+    local rackItem = roofRack:getInventoryItem()
+    if not rackItem then
+        if not ATA2Commands or not ATA2Commands.installTuning then
+            error("Autotsar tuning API is unavailable for the Army Bus roof rack")
+        end
+        ATA2Commands.installTuning(vehicle, roofRack, "Fench", 100)
+        rackItem = roofRack:getInventoryItem()
+    else
+        rackItem:setCondition(100)
+        rackItem:setMaxCapacity(200)
+        roofRack:setCondition(100)
+        roofRack:getModData().tuning2 = roofRack:getModData().tuning2 or {}
+        roofRack:getModData().tuning2.model = "Fench"
+        vehicle:transmitPartCondition(roofRack)
+        vehicle:transmitPartItem(roofRack)
+        vehicle:transmitPartModData(roofRack)
+
+        local installTable = roofRack:getTable("install")
+        if installTable and installTable.complete then
+            VehicleUtils.callLua(installTable.complete, vehicle, roofRack, nil)
+        end
+    end
+
+    if not rackItem then
+        error("Could not install the Army Bus roof rack")
+    end
+end
+
 local function addFreshItem(container, fullType)
     local item = instanceItem(fullType)
     if item then
@@ -124,8 +198,6 @@ local function addFreshItem(container, fullType)
             -- The plain scarf is tintable; make this one black.
             item:getVisual():setTint(ImmutableColor.new(0.08, 0.08, 0.08, 1.0))
         elseif fullType == "Base.FlashLight_AngleHead_Army" then
-            item:setUsedDelta(1.0)
-        elseif fullType == "Base.GasmaskFilter" then
             item:setUsedDelta(1.0)
         end
 
@@ -166,28 +238,6 @@ local function getLevelingBookTypes()
     return books
 end
 
-local function getPackedLevelingBookTypes()
-    local packedBooks = {}
-    local packedModules = {}
-    local scripts = getScriptManager():getAllItems()
-
-    for index = 0, scripts:size() - 1 do
-        local script = scripts:get(index)
-        if script and script:getDoubleClickRecipe() == "UnpackSetOfBooks" then
-            local fullType = script:getFullName()
-            table.insert(packedBooks, fullType)
-
-            local moduleName = string.match(fullType, "^([^%.]+)%.")
-            if moduleName then
-                packedModules[moduleName] = true
-            end
-        end
-    end
-
-    table.sort(packedBooks)
-    return packedBooks, packedModules
-end
-
 local function containerHasFullType(container, fullType)
     local items = container:getItems()
     for index = 0, items:size() - 1 do
@@ -200,19 +250,36 @@ end
 
 local function addMissingBusBooks(container)
     local added = 0
-    local packedBooks, packedModules = getPackedLevelingBookTypes()
     local books = {}
+    local seen = {}
+    local levelingBooks = getLevelingBookTypes()
 
-    for _, fullType in ipairs(packedBooks) do
-        table.insert(books, fullType)
+    local function include(fullType)
+        if fullType and not seen[fullType] then
+            seen[fullType] = true
+            table.insert(books, fullType)
+        end
     end
 
-    -- Keep individual volumes only for loaded skills whose mod does not
-    -- provide an unpackable set item.
-    for _, fullType in ipairs(getLevelingBookTypes()) do
-        local moduleName = string.match(fullType, "^([^%.]+)%.")
-        if not moduleName or not packedModules[moduleName] then
-            table.insert(books, fullType)
+    for _, series in ipairs(FULL_BOOK_SERIES) do
+        if series.packed and ScriptManager.instance:FindItem(series.packed) then
+            include(series.packed)
+        else
+            for _, fullType in ipairs(levelingBooks) do
+                local script = ScriptManager.instance:FindItem(fullType)
+                if script and script:getSkillTrained() == series.skill then
+                    include(fullType)
+                end
+            end
+        end
+    end
+
+    for _, fullType in ipairs(levelingBooks) do
+        local script = ScriptManager.instance:FindItem(fullType)
+        local skill = script and script:getSkillTrained() or nil
+        local firstLevel = script and tonumber(script:getLevelSkillTrained()) or 0
+        if TWO_VOLUME_SKILLS[skill] and (firstLevel == 1 or firstLevel == 3) then
+            include(fullType)
         end
     end
 
@@ -227,8 +294,8 @@ local function addMissingBusBooks(container)
         end
     end
 
-    log("Added " .. tostring(added) .. " missing packed book sets or unpacked fallback volumes from "
-        .. tostring(#books) .. " loaded base-game and mod book definitions.")
+    log("Added " .. tostring(added) .. " selected bus books from "
+        .. tostring(#books) .. " available base-game and optional-mod definitions.")
 end
 
 local function addMissingLooseLevelingBooks(container)
@@ -278,6 +345,7 @@ end
 local function finishVehicle(vehicle)
     vehicle:repair()
     vehicle:setLocked(false)
+    configureBodyAndRoofRack(vehicle)
 
     local rearStorage = prepareStorageAndDoors(vehicle)
     if not rearStorage then
@@ -297,6 +365,12 @@ local function finishVehicle(vehicle)
     for _, fullType in ipairs(REQUESTED_ITEMS) do
         if not addFreshItem(rearStorage, fullType) then
             error("Could not create requested item " .. fullType)
+        end
+    end
+
+    for _, fullType in ipairs(OPTIONAL_ITEMS) do
+        if ScriptManager.instance:FindItem(fullType) then
+            addFreshItem(rearStorage, fullType)
         end
     end
 

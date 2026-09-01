@@ -6,9 +6,9 @@ A collection of personal Project Zomboid Build 42 mods maintained by Eugene-17.
 
 ### Eugene's Army Bus Spawn
 
-Spawns one fully repaired Autotsar Army Bus at `13705,1793,0` once per save. The bus has a curated clean inventory, nine wooden crates, two student bench/tables, no fuel, and a 100%-condition battery at 0% charge. It dynamically includes packed sets for every loaded leveling-book series that provides one, retaining loose Volumes I-V only for mod skills without a packed set; recipe and trait-granting literature remain excluded. PROJECT RV Interior terrain is left unchanged, so farmable dirt must be moved into the RV area manually.
+Spawns one fully repaired Autotsar Army Bus at `13705,1793,0` once per save with its plain, no-lettering skin and a 200-capacity roof rack. The bus has practical tools and supplies, one wooden crate, one student bench/table, no fuel, and a 100%-condition battery at 0% charge. Its selective library contains complete packed Foraging, Long Blunt, Carpentry, and Tailoring sets; volumes I-II for other crafting, mobility, Maintenance, Aiming, and Reloading skills; and optional complete Scavenging, Fitness, and Strength series when their book mods are loaded. The standalone Long Blunt set is supplied by this mod but is not added to bookstore loot. Recipe and trait-granting literature are excluded.
 
-Dependencies: Autotsar Tuning Atelier Bus, More Traits, and Project RV Interior. Compatible leveling books from optional mods such as Scavenging Skill, Extra Books, and RadArchery are included automatically when those mods are enabled.
+Dependency: Autotsar Tuning Atelier Bus. More Traits items, Extra Books series, and Scavenging Skill books are detected and added when available; none is required. Project RV Interior remains compatible but optional.
 
 ### Eugene's Random Animal Carriers
 

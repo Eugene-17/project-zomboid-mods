@@ -1,0 +1,133 @@
+module CodexArmyBusSpawn
+{
+    imports
+    {
+        Base
+    }
+
+    item BookLongBlunt1
+    {
+        DisplayCategory = SkillBook,
+        ItemType = base:literature,
+        Weight = 1.0,
+        Icon = Book8,
+        LvlSkillTrained = 1,
+        NumLevelsTrained = 2,
+        NumberOfPages = 220,
+        SkillTrained = Blunt,
+        StaticModel = BookBrown,
+        WorldStaticModel = BookBrown_Ground,
+    }
+
+    item BookLongBlunt2
+    {
+        DisplayCategory = SkillBook,
+        ItemType = base:literature,
+        Weight = 1.0,
+        Icon = Book8,
+        LvlSkillTrained = 3,
+        NumLevelsTrained = 2,
+        NumberOfPages = 260,
+        SkillTrained = Blunt,
+        StaticModel = BookBrown,
+        WorldStaticModel = BookBrown_Ground,
+    }
+
+    item BookLongBlunt3
+    {
+        DisplayCategory = SkillBook,
+        ItemType = base:literature,
+        Weight = 1.0,
+        Icon = Book8,
+        LvlSkillTrained = 5,
+        NumLevelsTrained = 2,
+        NumberOfPages = 300,
+        SkillTrained = Blunt,
+        StaticModel = BookBrown,
+        WorldStaticModel = BookBrown_Ground,
+    }
+
+    item BookLongBlunt4
+    {
+        DisplayCategory = SkillBook,
+        ItemType = base:literature,
+        Weight = 1.0,
+        Icon = Book8,
+        LvlSkillTrained = 7,
+        NumLevelsTrained = 2,
+        NumberOfPages = 340,
+        SkillTrained = Blunt,
+        StaticModel = BookBrown,
+        WorldStaticModel = BookClosedBrown_Ground,
+    }
+
+    item BookLongBlunt5
+    {
+        DisplayCategory = SkillBook,
+        ItemType = base:literature,
+        Weight = 1.0,
+        Icon = Book8,
+        LvlSkillTrained = 9,
+        NumLevelsTrained = 2,
+        NumberOfPages = 380,
+        SkillTrained = Blunt,
+        StaticModel = BookBrown,
+        WorldStaticModel = BookClosedBrown_Ground,
+    }
+
+    item BookLongBluntSet
+    {
+        DisplayCategory = SkillBook,
+        ItemType = base:normal,
+        Weight = 4.0,
+        Icon = BookSlipcase,
+        IconColorMask = BookSlipcase_Mask,
+        WorldStaticModel = BookSlipcase,
+        Tags = base:ignorezombiedensity,
+        ColorBlue = 90,
+        ColorGreen = 120,
+        ColorRed = 145,
+        DoubleClickRecipe = UnpackLongBluntBookSet,
+    }
+
+    craftRecipe UnpackLongBluntBookSet
+    {
+        timedAction = UnPackBox,
+        time = 80,
+        Tags = InHandCraft;Packing;CanBeDoneInDark,
+        category = Packing,
+        inputs
+        {
+            item 1 [CodexArmyBusSpawn.BookLongBluntSet] flags[AllowFavorite;InheritFavorite],
+        }
+        outputs
+        {
+            item 1 CodexArmyBusSpawn.BookLongBlunt1,
+            item 1 CodexArmyBusSpawn.BookLongBlunt2,
+            item 1 CodexArmyBusSpawn.BookLongBlunt3,
+            item 1 CodexArmyBusSpawn.BookLongBlunt4,
+            item 1 CodexArmyBusSpawn.BookLongBlunt5,
+        }
+    }
+
+    craftRecipe PackLongBluntBookSet
+    {
+        timedAction = PackingBox,
+        time = 80,
+        Tags = InHandCraft;Packing,
+        category = Packing,
+        inputs
+        {
+            item 1 [CodexArmyBusSpawn.BookLongBlunt1] flags[AllowFavorite;InheritFavorite],
+            item 1 [CodexArmyBusSpawn.BookLongBlunt2] flags[AllowFavorite;InheritFavorite],
+            item 1 [CodexArmyBusSpawn.BookLongBlunt3] flags[AllowFavorite;InheritFavorite],
+            item 1 [CodexArmyBusSpawn.BookLongBlunt4] flags[AllowFavorite;InheritFavorite],
+            item 1 [CodexArmyBusSpawn.BookLongBlunt5] flags[AllowFavorite;InheritFavorite],
+        }
+        outputs
+        {
+            item 1 CodexArmyBusSpawn.BookLongBluntSet,
+        }
+    }
+}
+
