@@ -6,9 +6,13 @@ A collection of personal Project Zomboid Build 42 mods maintained by Eugene-17.
 
 ### Eugene's Army Bus Spawn
 
-Spawns one fully repaired Autotsar Army Bus at `13705,1793,0` once per save with its plain, no-lettering skin and a 200-capacity roof rack. The bus has practical tools and supplies, one wooden crate, one student bench/table, no fuel, and a 100%-condition battery at 0% charge. Its selective library contains complete packed Foraging, Long Blunt, Carpentry, and Tailoring sets; volumes I-II for other crafting, mobility, Maintenance, Aiming, and Reloading skills; and optional complete Scavenging, Fitness, and Strength series when their book mods are loaded. The standalone Long Blunt set is supplied by this mod but is not added to bookstore loot. Recipe and trait-granting literature are excluded.
+Spawns one fully repaired Autotsar Army Bus at `13705,1793,0` once per save with its plain, no-lettering skin and no roof rack. The bus has practical tools and supplies, one wooden crate, one student bench/table, no fuel, and a 100%-condition battery at 0% charge. It does not spawn skill books or a car battery charger; version 7 also removes those legacy items from an existing bus.
 
-Dependency: Autotsar Tuning Atelier Bus. More Traits items, Extra Books series, and Scavenging Skill books are detected and added when available; none is required. Project RV Interior remains compatible but optional.
+Dependency: Autotsar Tuning Atelier Bus. More Traits items are detected and added when available but are not required. Project RV Interior remains compatible but optional.
+
+### Eugene's Money Skill Books
+
+Adds hand-crafting recipes that exchange loose cash for individual skill books. Volume 1 costs $10, Volume 2 $20, Volume 3 $30, Volume 4 $40, and Volume 5 $50. Recipes are also provided for compatible skill books from the currently installed Extra Books, RadArchery, and Scavenging mods.
 
 ### Eugene's Random Animal Carriers
 
@@ -18,7 +22,7 @@ Dependency: Cats Mod.
 
 ### Eugene's Constructible Fishing Pond
 
-Adds individually buildable pond center, edge, and corner tiles. A complete closed pond at least 3x3 in size creates a renewable fish school. It also includes craftable Fish Check Glasses for inspecting fish-school status.
+Provides two construction recipes: build a fishable pond center from two full 10 L buckets of water, or fill in a constructed center. Building a center automatically generates a varied vanilla shoreline on surrounding land without covering adjacent water. Connected constructed water retains renewable fish schools, and Fishing 4 can inspect their stock directly.
 
 ### Eugene's More Traits Prowess Compatibility
 
@@ -40,9 +44,15 @@ Adds a two-stage endgame treatment. The Medical 6 Knox Infection Cure removes pl
 
 Dependency: Bandits 2.
 
+### Eugene's Bandits Compatibility
+
+Repairs Bandits 2 custom-profile integration on Build 42.20.4 without modifying the Workshop mod. Individual spawning temporarily adapts custom profiles that store their clan under `general.cid`, and the removed `loadstring`-based BanditFS implementation is replaced with a safe literal-data parser. Steam updates cannot overwrite this compatibility mod.
+
+Dependency: Bandits 2.
+
 ### Eugene's Auto Unwanted
 
-Automatically marks newly looted clothing, tools, firearms, books (including recipe literature), artifacts, and cooking utensils as Unwanted. Its six World Settings checkboxes default to enabled, and transfers between the player's own inventory containers are ignored.
+Automatically marks newly looted clothing, tools, firearms, books (including recipe and writable literature), artifacts, and cooking utensils as Unwanted. Its six World Settings checkboxes default to enabled, and transfers between the player's own inventory containers are ignored.
 
 Dependency: Organized Categories: Core.
 

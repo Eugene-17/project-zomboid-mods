@@ -1,6 +1,6 @@
 # Eugene's Auto Unwanted
 
-A Project Zomboid Build 42 mod that marks newly looted items as Unwanted based on six World Settings checkboxes: clothing, tools, firearms, books (including recipe literature), artifacts, and cooking utensils.
+A Project Zomboid Build 42 mod that marks newly looted items as Unwanted based on six World Settings checkboxes: clothing, tools, firearms, books and writable literature, artifacts, and cooking utensils.
 
 - Only transfers from an external container into the player's inventory or an equipped bag count as looting.
 - Moving items between the player's own containers does not mark them again.

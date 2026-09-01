@@ -35,6 +35,7 @@ local BOOK_CATEGORIES = {
     literatureRecipe = true,
     literatureEntertainment = true,
     literatureSkillBook = true,
+    literatureWriteable = true,
     Literature = true,
     SkillBook = true,
 }

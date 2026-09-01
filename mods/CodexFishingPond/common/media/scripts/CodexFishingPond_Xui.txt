@@ -2,19 +2,19 @@ module Base
 {
     xuiSkin default
     {
-        entity ES_CFP_PondCornerNW { LuaWindowClass = ISEntityWindow, DisplayName = Pond - North-West Corner, BuildDescription = Vanilla north-west shoreline attachment., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeN { LuaWindowClass = ISEntityWindow, DisplayName = Pond - North Edge A, BuildDescription = First vanilla north shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondCornerNE { LuaWindowClass = ISEntityWindow, DisplayName = Pond - North-East Corner, BuildDescription = Vanilla north-east shoreline attachment., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeW { LuaWindowClass = ISEntityWindow, DisplayName = Pond - West Edge A, BuildDescription = First vanilla west shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondCenter { LuaWindowClass = ISEntityWindow, DisplayName = Pond - Fishable Center, BuildDescription = A true vanilla water tile recognized by fishing., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeE { LuaWindowClass = ISEntityWindow, DisplayName = Pond - East Edge A, BuildDescription = First vanilla east shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondCornerSW { LuaWindowClass = ISEntityWindow, DisplayName = Pond - South-West Corner, BuildDescription = Vanilla south-west shoreline attachment., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeS { LuaWindowClass = ISEntityWindow, DisplayName = Pond - South Edge A, BuildDescription = First vanilla south shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondCornerSE { LuaWindowClass = ISEntityWindow, DisplayName = Pond - South-East Corner, BuildDescription = Vanilla south-east shoreline attachment., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeN2 { LuaWindowClass = ISEntityWindow, DisplayName = Pond - North Edge B, BuildDescription = Alternate vanilla north shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeW2 { LuaWindowClass = ISEntityWindow, DisplayName = Pond - West Edge B, BuildDescription = Alternate vanilla west shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeE2 { LuaWindowClass = ISEntityWindow, DisplayName = Pond - East Edge B, BuildDescription = Alternate vanilla east shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_PondEdgeS2 { LuaWindowClass = ISEntityWindow, DisplayName = Pond - South Edge B, BuildDescription = Alternate vanilla south shoreline profile., Icon = Build_RainCollectorCrate2, }
-        entity ES_CFP_FillPondTile { LuaWindowClass = ISEntityWindow, DisplayName = Fill In Pond Tile, BuildDescription = Removes one constructed center or shoreline tile., Icon = Build_FloorDirt, }
+        entity ES_CFP_PondCenter
+        {
+            LuaWindowClass = ISEntityWindow,
+            DisplayName = Build Fishing Pond Center,
+            BuildDescription = Builds fishable water from two full buckets (20 L) and automatically paints a varied vanilla shoreline around it.,
+            Icon = Build_RainCollectorCrate2,
+        }
+        entity ES_CFP_FillPondTile
+        {
+            LuaWindowClass = ISEntityWindow,
+            DisplayName = Fill In Pond Tile,
+            BuildDescription = Restores one constructed center and recalculates its automatic shoreline.,
+            Icon = Build_FloorDirt,
+        }
     }
 }

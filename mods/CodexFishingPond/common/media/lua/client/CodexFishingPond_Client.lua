@@ -3,10 +3,8 @@ require "ISUI/ISWorldObjectContextMenu"
 
 local M = CodexFishingPond
 
-local function isWearingFishCheckGlasses(playerObj)
-    if not playerObj then return false end
-    local glasses = playerObj:getWornItem(ItemBodyLocation.EYES)
-    return glasses and glasses:getFullType() == M.CHECK_GLASSES_TYPE
+local function canInspectFishSchool(playerObj)
+    return playerObj and playerObj:getPerkLevel(Perks.Fishing) >= 4
 end
 
 local function findWaterSquare(worldobjects)
@@ -39,7 +37,7 @@ end
 
 local function onFillWorldObjectContextMenu(playerNum, context, worldobjects, test)
     local playerObj = getSpecificPlayer(playerNum)
-    if not isWearingFishCheckGlasses(playerObj) then return end
+    if not canInspectFishSchool(playerObj) then return end
 
     local square = findWaterSquare(worldobjects)
     if not square then return end

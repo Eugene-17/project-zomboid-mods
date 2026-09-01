@@ -1,0 +1,2972 @@
+module CodexMoneySkillBooks
+{
+    // literature.txt
+    craftRecipe BuySkillBook_Base_BookAiming1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookAiming1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookAiming2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookAiming2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookAiming3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookAiming3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookAiming4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookAiming4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookAiming5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookAiming5,
+        }
+    }
+
+
+    // RadArcheryBooks.txt
+    craftRecipe BuySkillBook_Base_BookArchery1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookArchery1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookArchery2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookArchery2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookArchery3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookArchery3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookArchery4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookArchery4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookArchery5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookArchery5,
+        }
+    }
+
+
+    // literature.txt
+    craftRecipe BuySkillBook_Base_BookBlacksmith1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookBlacksmith1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookBlacksmith2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookBlacksmith2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookBlacksmith3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookBlacksmith3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookBlacksmith4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookBlacksmith4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookBlacksmith5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookBlacksmith5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookButchering1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookButchering1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookButchering2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookButchering2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookButchering3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookButchering3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookButchering4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookButchering4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookButchering5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookButchering5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarpentry1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarpentry1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarpentry2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarpentry2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarpentry3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarpentry3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarpentry4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarpentry4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarpentry5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarpentry5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarving1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarving1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarving2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarving2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarving3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarving3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarving4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarving4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCarving5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCarving5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCooking1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCooking1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCooking2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCooking2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCooking3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCooking3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCooking4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCooking4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookCooking5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookCooking5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookElectrician1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookElectrician1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookElectrician2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookElectrician2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookElectrician3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookElectrician3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookElectrician4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookElectrician4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookElectrician5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookElectrician5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFarming1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFarming1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFarming2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFarming2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFarming3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFarming3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFarming4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFarming4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFarming5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFarming5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFirstAid1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFirstAid1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFirstAid2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFirstAid2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFirstAid3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFirstAid3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFirstAid4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFirstAid4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFirstAid5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFirstAid5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFishing1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFishing1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFishing2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFishing2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFishing3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFishing3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFishing4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFishing4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFishing5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFishing5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFlintKnapping1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFlintKnapping1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFlintKnapping2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFlintKnapping2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFlintKnapping3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFlintKnapping3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFlintKnapping4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFlintKnapping4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookFlintKnapping5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookFlintKnapping5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookForaging1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookForaging1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookForaging2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookForaging2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookForaging3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookForaging3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookForaging4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookForaging4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookForaging5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookForaging5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookGlassmaking1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookGlassmaking1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookGlassmaking2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookGlassmaking2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookGlassmaking3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookGlassmaking3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookGlassmaking4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookGlassmaking4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookGlassmaking5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookGlassmaking5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookHusbandry1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookHusbandry1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookHusbandry2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookHusbandry2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookHusbandry3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookHusbandry3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookHusbandry4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookHusbandry4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookHusbandry5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookHusbandry5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookLongBlade1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookLongBlade1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookLongBlade2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookLongBlade2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookLongBlade3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookLongBlade3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookLongBlade4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookLongBlade4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookLongBlade5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookLongBlade5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMaintenance1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMaintenance1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMaintenance2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMaintenance2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMaintenance3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMaintenance3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMaintenance4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMaintenance4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMaintenance5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMaintenance5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMasonry1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMasonry1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMasonry2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMasonry2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMasonry3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMasonry3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMasonry4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMasonry4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMasonry5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMasonry5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMechanic1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMechanic1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMechanic2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMechanic2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMechanic3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMechanic3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMechanic4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMechanic4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMechanic5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMechanic5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMetalWelding1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMetalWelding1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMetalWelding2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMetalWelding2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMetalWelding3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMetalWelding3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMetalWelding4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMetalWelding4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookMetalWelding5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookMetalWelding5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookPottery1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookPottery1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookPottery2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookPottery2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookPottery3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookPottery3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookPottery4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookPottery4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookPottery5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookPottery5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookReloading1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookReloading1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookReloading2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookReloading2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookReloading3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookReloading3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookReloading4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookReloading4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookReloading5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookReloading5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTailoring1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTailoring1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTailoring2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTailoring2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTailoring3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTailoring3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTailoring4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTailoring4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTailoring5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTailoring5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTracking1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTracking1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTracking2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTracking2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTracking3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTracking3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTracking4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTracking4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTracking5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTracking5,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTrapping1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTrapping1,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTrapping2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTrapping2,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTrapping3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTrapping3,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTrapping4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTrapping4,
+        }
+    }
+
+    craftRecipe BuySkillBook_Base_BookTrapping5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 Base.BookTrapping5,
+        }
+    }
+
+
+    // ExtraBooks_Books.txt
+    craftRecipe BuySkillBook_ExtraBooks_EBAxe1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBAxe1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBAxe2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBAxe2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBAxe3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBAxe3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBAxe4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBAxe4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBAxe5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBAxe5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBBlunt1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBBlunt1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBBlunt2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBBlunt2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBBlunt3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBBlunt3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBBlunt4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBBlunt4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBBlunt5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBBlunt5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBFitness1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBFitness1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBFitness2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBFitness2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBFitness3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBFitness3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBFitness4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBFitness4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBFitness5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBFitness5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBLightfooted1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBLightfooted1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBLightfooted2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBLightfooted2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBLightfooted3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBLightfooted3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBLightfooted4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBLightfooted4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBLightfooted5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBLightfooted5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBNimble1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBNimble1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBNimble2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBNimble2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBNimble3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBNimble3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBNimble4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBNimble4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBNimble5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBNimble5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlade1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlade1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlade2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlade2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlade3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlade3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlade4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlade4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlade5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlade5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlunt1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlunt1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlunt2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlunt2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlunt3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlunt3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlunt4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlunt4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSmallBlunt5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSmallBlunt5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSneaking1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSneaking1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSneaking2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSneaking2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSneaking3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSneaking3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSneaking4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSneaking4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSneaking5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSneaking5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSpear1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSpear1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSpear2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSpear2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSpear3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSpear3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSpear4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSpear4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSpear5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSpear5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSprinting1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSprinting1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSprinting2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSprinting2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSprinting3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSprinting3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSprinting4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSprinting4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBSprinting5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBSprinting5,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBStrength1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBStrength1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBStrength2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBStrength2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBStrength3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBStrength3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBStrength4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBStrength4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ExtraBooks_EBStrength5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ExtraBooks.EBStrength5,
+        }
+    }
+
+
+    // ScavengerSkillItems.txt
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 10 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ScavengingSkill.BookScavenging1,
+        }
+    }
+
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging2
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 20 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ScavengingSkill.BookScavenging2,
+        }
+    }
+
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging3
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 30 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ScavengingSkill.BookScavenging3,
+        }
+    }
+
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging4
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 40 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ScavengingSkill.BookScavenging4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ScavengingSkill.BookScavenging5,
+        }
+    }
+
+}

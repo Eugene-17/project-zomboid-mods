@@ -6,7 +6,6 @@ M.MODULE = "CodexFishingPond"
 M.DATA_KEY = "CodexFishingPond_v2"
 M.MARKER_KEY = "CodexFishingPondTileId"
 M.VARIANT_KEY = "CodexFishingPondVariant"
-M.CHECK_GLASSES_TYPE = "CodexFishingPond.FishCheckGlasses"
 M.SCHOOL_BASE_CAPACITY = 10
 M.SCHOOL_FISH_PER_CENTER = 5
 M.SCHOOL_REPOPULATE_PER_DAY = 1

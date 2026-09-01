@@ -2,7 +2,7 @@ require "Tuning2/ATATuning2Commands"
 
 local MOD_TAG = "[CodexArmyBusSpawn] "
 local STATE_KEY = "CodexArmyBusSpawn_v1"
-local CONFIG_VERSION = 6
+local CONFIG_VERSION = 7
 local VEHICLE_SCRIPT = "Base.ATAArmyBus"
 
 local SPAWN_X = 13705
@@ -27,6 +27,8 @@ local REQUESTED_ITEMS = {
     "Base.Saw",
     "Base.BoltCutters",
     "Base.ComfreyCataplasm",
+    "Base.ComfreyCataplasm",
+    "Base.ComfreyCataplasm",
 }
 
 local OPTIONAL_ITEMS = {
@@ -49,41 +51,14 @@ local REQUESTED_MOVEABLES = {
     { sprite = "location_community_school_01_12", count = 1 },
 }
 
-local FULL_BOOK_SERIES = {
-    { skill = "Foraging", packed = "Base.BookForagingSet" },
-    { skill = "Blunt", packed = "CodexArmyBusSpawn.BookLongBluntSet" },
-    { skill = "Carpentry", packed = "Base.BookCarpentrySet" },
-    { skill = "Tailoring", packed = "Base.BookTailoringSet" },
-    { skill = "Scavenging" },
-    { skill = "Fitness", packed = "ExtraBooks.EBSetFitness" },
-    { skill = "Strength", packed = "ExtraBooks.EBSetStrength" },
+local LEGACY_PACKED_BOOKS = {
+    ["Base.BookForagingSet"] = true,
+    ["Base.BookCarpentrySet"] = true,
+    ["Base.BookTailoringSet"] = true,
+    ["ExtraBooks.EBSetBlunt"] = true,
+    ["ExtraBooks.EBSetFitness"] = true,
+    ["ExtraBooks.EBSetStrength"] = true,
 }
-
-local TWO_VOLUME_SKILLS = {
-    Carving = true,
-    Cooking = true,
-    Electricity = true,
-    Farming = true,
-    FirstAid = true,
-    FlintKnapping = true,
-    Glassmaking = true,
-    Masonry = true,
-    Mechanics = true,
-    MetalWelding = true,
-    Blacksmith = true,
-    Pottery = true,
-    Husbandry = true,
-    Butchering = true,
-    Nimble = true,
-    Sprinting = true,
-    Lightfooted = true,
-    Sneaking = true,
-    Maintenance = true,
-    Aiming = true,
-    Reloading = true,
-}
-
-local VERSION_6_MOVEABLES = {}
 
 local ticks = 0
 local loggedMissingItem = false
@@ -146,43 +121,26 @@ local function prepareStorageAndDoors(vehicle)
     return rearStorage
 end
 
-local function configureBodyAndRoofRack(vehicle)
+local function configureBody(vehicle)
     -- Army Bus skin 0 is the plain default texture. Skin 1 is the painted
     -- variant with side lettering.
     vehicle:setSkinIndex(0)
     vehicle:updateSkin()
     if vehicle.transmitSkinIndex then vehicle:transmitSkinIndex() end
 
+    -- Autotsar gives this tuning part a random spawn chance. Remove it from
+    -- the fresh bus so the requested no-roof-rack loadout is deterministic.
     local roofRack = vehicle:getPartById("ATA2InteractiveTrunkRoofRack")
-    if not roofRack then
-        error("Army Bus has no Autotsar roof-rack tuning part")
-    end
-
-    local rackItem = roofRack:getInventoryItem()
-    if not rackItem then
-        if not ATA2Commands or not ATA2Commands.installTuning then
-            error("Autotsar tuning API is unavailable for the Army Bus roof rack")
+    if roofRack and roofRack:getInventoryItem() then
+        if not ATA2Commands or not ATA2Commands.uninstallTuning then
+            error("Autotsar tuning API is unavailable for roof-rack removal")
         end
-        ATA2Commands.installTuning(vehicle, roofRack, "Fench", 100)
-        rackItem = roofRack:getInventoryItem()
-    else
-        rackItem:setCondition(100)
-        rackItem:setMaxCapacity(200)
-        roofRack:setCondition(100)
-        roofRack:getModData().tuning2 = roofRack:getModData().tuning2 or {}
-        roofRack:getModData().tuning2.model = "Fench"
-        vehicle:transmitPartCondition(roofRack)
-        vehicle:transmitPartItem(roofRack)
-        vehicle:transmitPartModData(roofRack)
-
-        local installTable = roofRack:getTable("install")
-        if installTable and installTable.complete then
-            VehicleUtils.callLua(installTable.complete, vehicle, roofRack, nil)
+        local tuningData = roofRack:getModData().tuning2
+        local modelName = tuningData and tuningData.model or "Fench"
+        ATA2Commands.uninstallTuning(vehicle, roofRack, modelName, nil)
+        if roofRack:getInventoryItem() then
+            error("Could not remove the randomly spawned Army Bus roof rack")
         end
-    end
-
-    if not rackItem then
-        error("Could not install the Army Bus roof rack")
     end
 end
 
@@ -216,103 +174,41 @@ local function addMoveable(container, sprite)
     return nil
 end
 
-local function getLevelingBookTypes()
-    local books = {}
-    local scripts = getScriptManager():getAllItems()
-
-    for index = 0, scripts:size() - 1 do
-        local script = scripts:get(index)
-        local skill = script and script:getSkillTrained() or nil
-        local firstLevel = script and tonumber(script:getLevelSkillTrained()) or 0
-
-        -- Proper XP-multiplier books use the five vanilla level bands. Recipe
-        -- magazines, trait books, and boxed book sets do not have SkillTrained.
-        if skill and skill ~= ""
-                and (firstLevel == 1 or firstLevel == 3 or firstLevel == 5
-                    or firstLevel == 7 or firstLevel == 9) then
-            table.insert(books, script:getFullName())
-        end
+local function isLegacySpawnedBook(item)
+    local fullType = item:getFullType()
+    if LEGACY_PACKED_BOOKS[fullType] then
+        return true
     end
 
-    table.sort(books)
-    return books
+    local script = ScriptManager.instance:FindItem(fullType)
+    local skill = script and script:getSkillTrained() or nil
+    local firstLevel = script and tonumber(script:getLevelSkillTrained()) or 0
+
+    -- This matches the exact class of loose XP-multiplier books that earlier
+    -- bus versions spawned, without touching magazines or ordinary literature.
+    return skill and skill ~= ""
+        and (firstLevel == 1 or firstLevel == 3 or firstLevel == 5
+            or firstLevel == 7 or firstLevel == 9)
 end
 
-local function containerHasFullType(container, fullType)
+local function removeLegacyBooksAndCharger(container)
+    local removedBooks = 0
+    local removedChargers = 0
     local items = container:getItems()
-    for index = 0, items:size() - 1 do
-        if items:get(index):getFullType() == fullType then
-            return true
-        end
-    end
-    return false
-end
 
-local function addMissingBusBooks(container)
-    local added = 0
-    local books = {}
-    local seen = {}
-    local levelingBooks = getLevelingBookTypes()
-
-    local function include(fullType)
-        if fullType and not seen[fullType] then
-            seen[fullType] = true
-            table.insert(books, fullType)
+    for index = items:size() - 1, 0, -1 do
+        local item = items:get(index)
+        if item:getFullType() == "Base.CarBatteryCharger" then
+            container:Remove(item)
+            removedChargers = removedChargers + 1
+        elseif isLegacySpawnedBook(item) then
+            container:Remove(item)
+            removedBooks = removedBooks + 1
         end
     end
 
-    for _, series in ipairs(FULL_BOOK_SERIES) do
-        if series.packed and ScriptManager.instance:FindItem(series.packed) then
-            include(series.packed)
-        else
-            for _, fullType in ipairs(levelingBooks) do
-                local script = ScriptManager.instance:FindItem(fullType)
-                if script and script:getSkillTrained() == series.skill then
-                    include(fullType)
-                end
-            end
-        end
-    end
-
-    for _, fullType in ipairs(levelingBooks) do
-        local script = ScriptManager.instance:FindItem(fullType)
-        local skill = script and script:getSkillTrained() or nil
-        local firstLevel = script and tonumber(script:getLevelSkillTrained()) or 0
-        if TWO_VOLUME_SKILLS[skill] and (firstLevel == 1 or firstLevel == 3) then
-            include(fullType)
-        end
-    end
-
-    table.sort(books)
-
-    for _, fullType in ipairs(books) do
-        if not containerHasFullType(container, fullType) then
-            if not addFreshItem(container, fullType) then
-                error("Could not create bus book item " .. fullType)
-            end
-            added = added + 1
-        end
-    end
-
-    log("Added " .. tostring(added) .. " selected bus books from "
-        .. tostring(#books) .. " available base-game and optional-mod definitions.")
-end
-
-local function addMissingLooseLevelingBooks(container)
-    local added = 0
-    local books = getLevelingBookTypes()
-
-    for _, fullType in ipairs(books) do
-        if not containerHasFullType(container, fullType) then
-            if not addFreshItem(container, fullType) then
-                error("Could not create leveling book " .. fullType)
-            end
-            added = added + 1
-        end
-    end
-
-    log("Added " .. tostring(added) .. " missing leveling books from "
-        .. tostring(#books) .. " loaded base-game and mod book definitions.")
+    log("Removed " .. tostring(removedBooks) .. " legacy skill-book item(s) and "
+        .. tostring(removedChargers) .. " car battery charger(s) from the existing Army Bus.")
 end
 
 local function findRearStorage(vehicle)
@@ -345,7 +241,7 @@ end
 local function finishVehicle(vehicle)
     vehicle:repair()
     vehicle:setLocked(false)
-    configureBodyAndRoofRack(vehicle)
+    configureBody(vehicle)
 
     local rearStorage = prepareStorageAndDoors(vehicle)
     if not rearStorage then
@@ -373,8 +269,6 @@ local function finishVehicle(vehicle)
             addFreshItem(rearStorage, fullType)
         end
     end
-
-    addMissingBusBooks(rearStorage)
 
     for _, definition in ipairs(REQUESTED_MOVEABLES) do
         for _ = 1, definition.count do
@@ -444,18 +338,8 @@ local function updateExistingBus(state)
     end
 
 
-    if previousVersion < 6 then
-        -- Preserve the original version-6 migration for existing buses.
-        addMissingLooseLevelingBooks(rearStorage)
-
-        for _, definition in ipairs(VERSION_6_MOVEABLES) do
-            for _ = 1, definition.count do
-                if not addMoveable(rearStorage, definition.sprite) then
-                    error("Could not add version 6 moveable " .. definition.sprite
-                        .. " to the existing Army Bus")
-                end
-            end
-        end
+    if previousVersion < 7 then
+        removeLegacyBooksAndCharger(rearStorage)
     end
 
     state.configVersion = CONFIG_VERSION

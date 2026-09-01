@@ -1,4 +1,4 @@
 name=Eugene's Constructible Fishing Pond
 id=CodexFishingPond
-description=Build a fishable pond one tile at a time from thirteen vanilla center, edge, and corner pieces. Completing a closed 3x3-or-larger pond creates one renewable fish school for its connected water. At Fishing 4, craft Fish Check Glasses to inspect water and pond stock. Shorelines attach to walkable ground; a complete 3x3 pond uses 50 L of bucket water, two sandbags, Carpentry 6, and a shovel or spade.
+description=Build fishable pond centers from two full 10 L buckets of water while varied vanilla shoreline tiles are generated automatically on surrounding land. Existing water is left untouched, filling a center recalculates its bank, and connected constructed water retains renewable fish schools. The mod provides only Build Fishing Pond Center and Fill In Pond Tile recipes; Fishing 4 can inspect water stock directly.
 versionMin=42.20

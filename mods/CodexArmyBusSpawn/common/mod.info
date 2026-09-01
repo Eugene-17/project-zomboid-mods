@@ -1,5 +1,5 @@
 name=Eugene's Army Bus Spawn
 id=CodexArmyBusSpawn
-description=Spawns one fully repaired, plain-skinned Autotsar Army Bus with a roof rack at 13705,1793,0 once per save, with a selective leveling-book library, practical tools and supplies, one crate, one student bench, an empty fuel tank, and a perfect but fully discharged battery. Optional More Traits, Extra Books, and Scavenging Skill content is added only when available.
+description=Spawns one fully repaired, plain-skinned Autotsar Army Bus at 13705,1793,0 once per save, with practical tools and supplies, one crate, one student bench, an empty fuel tank, and a perfect but fully discharged battery. Version 7 removes the previously spawned skill books and car battery charger from an existing bus.
 versionMin=42.20
 require=\ATA_Bus

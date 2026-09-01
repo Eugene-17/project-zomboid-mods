@@ -1,0 +1,4 @@
+name=Eugene's Money Skill Books
+id=CodexMoneySkillBooks
+description=Buy individual skill books with loose cash through the hand-crafting menu. Volume 1 costs $10, Volume 2 $20, Volume 3 $30, Volume 4 $40, and Volume 5 $50. Includes the currently installed Extra Books, RadArchery, and Scavenging skill books.
+versionMin=42.20
