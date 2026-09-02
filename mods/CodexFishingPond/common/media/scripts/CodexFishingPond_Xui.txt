@@ -6,7 +6,7 @@ module Base
         {
             LuaWindowClass = ISEntityWindow,
             DisplayName = Build Fishing Pond Center,
-            BuildDescription = Builds fishable water from two full buckets (20 L) and automatically paints a varied vanilla shoreline around it.,
+            BuildDescription = Builds fishable water from two full buckets (20 L) and adds varied straight shoreline on its four sides.,
             Icon = Build_RainCollectorCrate2,
         }
         entity ES_CFP_FillPondTile

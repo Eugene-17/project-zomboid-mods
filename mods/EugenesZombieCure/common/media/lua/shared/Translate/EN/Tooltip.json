@@ -1,5 +1,5 @@
 {
-    "Tooltip_EZC_ZombieCure": "A single-use Medical 6 treatment. Use it on yourself to purge the Knox infection without healing wounds, or administer it to a prone living zombie to restore normal skin, remove gore, and pacify it. Crafting grants 165 base Medical XP.",
-    "Tooltip_EZC_RestorationSerum": "A difficult Medical 10 treatment. It writes a physical record of a pacified zombie, then uses that record and the zombie's actual equipment to create a named, permanent, loyal Bandits companion.",
-    "Tooltip_EZC_ReanimationStimulant": "A single-use Medical 3 drug. Administer it to a human corpse to reanimate that body as a hostile zombie with its original appearance and possessions. Crafting grants 20 base Medical XP."
+    "Tooltip_EZC_ZombieCure": "The Simple Cure is a Medical 6 treatment. Use it on yourself to purge the Knox infection without healing wounds, or administer it to a prone living zombie. On a zombie, the cure remains in its inventory as the persistent pacification marker while restoring normal skin and removing gore. Crafting grants 165 base Medical XP.",
+    "Tooltip_EZC_RestorationSerum": "The True Cure is a difficult Medical 10 treatment. It instantly replaces a pacified zombie with a permanent survivor recruited through [B42] True Companions. The survivor copies only the zombie's restored appearance, starts downed with an empty inventory, and begins at Fond relationship. The zombie's physical belongings are dropped on the ground.",
+    "Tooltip_EZC_ReanimationStimulant": "The Faulty Cure is a single-use Medical 3 treatment. Administer it to a human corpse to reanimate that body as a hostile zombie with its original appearance and possessions. Crafting grants 20 base Medical XP."
 }

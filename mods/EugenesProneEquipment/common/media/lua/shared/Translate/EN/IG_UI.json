@@ -35,5 +35,5 @@
     "IGUI_EPE_RecordNone": "- None",
     "IGUI_EPE_RecordNoneValue": "None",
     "IGUI_EPE_RecordUnknown": "Unknown item",
-    "IGUI_EPE_RecordWarning": "This physical record and the listed items are required to recreate the subject. A pacified zombie left in the world is not guaranteed to survive a save/load."
+    "IGUI_EPE_RecordWarning": "The embedded Simple Cure preserves pacification across save/load. This physical record and the listed items preserve the subject's appearance and equipment."
 }

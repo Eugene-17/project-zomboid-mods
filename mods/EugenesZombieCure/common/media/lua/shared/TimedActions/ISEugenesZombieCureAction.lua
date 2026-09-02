@@ -95,7 +95,7 @@ end
 function ISEugenesZombieCureAction:getDuration()
     if self.character:isTimedActionInstant() then return 1 end
     if M.isReanimationItem(self.item) then return 300 end
-    if M.isRestorationItem(self.item) then return 360 end
+    if M.isRestorationItem(self.item) then return 1 end
     return self.target and 240 or 180
 end
 

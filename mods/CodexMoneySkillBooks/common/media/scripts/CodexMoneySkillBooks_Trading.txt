@@ -1,0 +1,93 @@
+module CodexMoneySkillBooks
+{
+    craftRecipe SellElectronicsScrap1
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 1 [Base.ElectronicsScrap],
+        }
+        outputs
+        {
+            item 1 Base.Money,
+        }
+    }
+
+    craftRecipe SellElectronicsScrap10
+    {
+        timedAction = Making,
+        time = 100,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 10 [Base.ElectronicsScrap],
+        }
+        outputs
+        {
+            item 10 Base.Money,
+        }
+    }
+
+    craftRecipe SellElectronicsScrap50
+    {
+        timedAction = Making,
+        time = 250,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 50 [Base.ElectronicsScrap],
+        }
+        outputs
+        {
+            item 50 Base.Money,
+        }
+    }
+
+    craftRecipe SellToy
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 1 [Base.Bricktoys;Base.CardDeck;Base.CatToy;Base.Crayons;Base.Cube;Base.Dice;Base.DogChew;Base.Doll;Base.RubberSpider;Base.ToyBear;Base.ToyBear_Crafted_Cotton;Base.ToyBear_Crafted_Burlap;Base.ToyCar;Base.ToyPlane;Base.Yoyo],
+        }
+        outputs
+        {
+            item 2 Base.Money,
+        }
+    }
+
+    craftRecipe SellArtifactOrMemento
+    {
+        timedAction = Making,
+        time = 20,
+        OnTest = CodexMoneySkillBooksTrading.isSellableMemento,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        category = Miscellaneous,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 1 tags[base:ismemento],
+        }
+        outputs
+        {
+            item 10 Base.Money,
+        }
+    }
+}

@@ -1,4 +1,4 @@
 name=Eugene's Prone Equipment
 id=EugenesProneEquipment
-description=Change equipment on a prone living target, and secure a pacified zombie with a physical subject record for vehicle or RV transport.
+description=Change equipment on a prone living player or ordinary zombie, and secure a pacified zombie with a physical subject record for vehicle or RV transport. Bandits NPCs are explicitly excluded.
 versionMin=42.20

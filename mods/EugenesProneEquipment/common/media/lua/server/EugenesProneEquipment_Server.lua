@@ -37,9 +37,7 @@ end
 local function ensureZombieInventory(zombie)
     local data = zombie:getModData()
     if data.EugenesProneEquipmentInitialized then return end
-    if not M.isCompanionTarget(zombie) then
-        zombie:DoZombieInventory()
-    end
+    zombie:DoZombieInventory()
     data.EugenesProneEquipmentInitialized = true
 end
 
@@ -87,53 +85,14 @@ end
 local function refreshPhysicalRecord(zombie)
     local inventory = zombie:getInventory()
     local record = M.findZombieRecord(inventory)
-    local cureApi = getZombieCureApi()
-    local id = zombie:getPersistentOutfitID()
-    local cluster = GetBanditClusterData and GetBanditClusterData(id) or nil
-    local brain = zombie:getModData().brain or (cluster and cluster[id])
-    local previousSnapshot = M.getZombieRecordSnapshot(record)
-        or (brain and brain.EugenesZombieCureSnapshot)
-    local restored = cureApi and cureApi.isRestoredCompanionBrain
-        and cureApi.isRestoredCompanionBrain(brain)
-
-    if restored then
-        local snapshot = M.makeZombieSnapshot(zombie)
-        if snapshot then
-            snapshot.restoredName = previousSnapshot and previousSnapshot.restoredName
-                or brain.fullname
-            brain.EugenesZombieCureSnapshot = snapshot
-            if cureApi.updateRestoredCompanionSnapshot then
-                cureApi.updateRestoredCompanionSnapshot(zombie, brain, snapshot)
-            end
-        end
-        purgeZombieRecords(inventory)
-    elseif record then
-        record = M.createOrUpdateZombieRecord(zombie)
-        if not record then return end
-    end
-    if restored and brain then
-        brain.EugenesZombieCureRestored = true
-        if type(brain.key) == "string" and string.sub(brain.key, 1, 12) == "ezc-restore-" then
-            brain.key = nil
-        end
-        zombie:getModData().brain = brain
-        if cluster then
-            cluster[id] = brain
-            if TransmitBanditCluster then TransmitBanditCluster(id) end
-        end
-        if cureApi.updateRestoredItemsToSpawnAtDeath then
-            cureApi.updateRestoredItemsToSpawnAtDeath(zombie)
-        elseif Bandit and Bandit.UpdateItemsToSpawnAtDeath then
-            Bandit.UpdateItemsToSpawnAtDeath(zombie, brain)
-        end
-    end
+    if record then M.createOrUpdateZombieRecord(zombie) end
 end
 
 local function syncZombieVisuals(zombie, refreshRecord, appearance)
     local visuals = zombie:getItemVisuals()
     visuals:clear()
     zombie:getWornItems():getItemVisuals(visuals)
-    if not M.isCompanionTarget(zombie) then zombie:resetModelNextFrame() end
+    zombie:resetModelNextFrame()
     if refreshRecord ~= false then refreshPhysicalRecord(zombie) end
     if isServer() then
         sendServerCommand(M.MODULE, "zombieVisuals", {
@@ -165,6 +124,29 @@ local function moveAllItemsWithoutSync(source, destination)
         source:Remove(item)
         destination:AddItem(item)
     end
+end
+
+local function ensureCarrierPacificationMarker(carrier)
+    local cureApi = getZombieCureApi()
+    local inventory = carrier and carrier:getInventory() or nil
+    if not cureApi or not inventory then return false end
+
+    local data = carrier:getModData()
+    local cure = inventory:getFirstTypeRecurse(cureApi.ITEM_FULL_TYPE)
+    if data.EugenesZombieCureMarkerVersion
+        == cureApi.PACIFICATION_SCHEMA_VERSION then
+        return cure ~= nil
+    end
+
+    -- Carriers saved by the previous version contain a zombie record but no
+    -- cure because the treatment used to be consumed. Migrate each once.
+    if not cure then
+        cure = inventory:AddItem(cureApi.ITEM_FULL_TYPE)
+        if cure and isServer() then sendAddItemToContainer(inventory, cure) end
+    end
+    if not cure then return false end
+    data.EugenesZombieCureMarkerVersion = cureApi.PACIFICATION_SCHEMA_VERSION
+    return true
 end
 
 local function removeZombieFromWorld(zombie)
@@ -208,6 +190,11 @@ local function pickupPacifiedZombie(playerObj, zombie)
     end
 
     moveAllItemsWithoutSync(zombie:getInventory(), carrier:getInventory())
+    local cureApi = getZombieCureApi()
+    if cureApi then
+        carrier:getModData().EugenesZombieCureMarkerVersion
+            = cureApi.PACIFICATION_SCHEMA_VERSION
+    end
     playerObj:getInventory():AddItem(carrier)
     if isServer() then sendAddItemToContainer(playerObj:getInventory(), carrier) end
     removeZombieFromWorld(zombie)
@@ -286,9 +273,10 @@ end
 local function migrateLegacyCarrier(carrier)
     local inventory = carrier:getInventory()
     local record = M.findZombieRecord(inventory)
-    if record then return record end
     local data = carrier:getModData()
-    if data.EugenesProneEquipmentHasZombie ~= true then return nil end
+    if not record and data.EugenesProneEquipmentHasZombie ~= true then return nil end
+    if not ensureCarrierPacificationMarker(carrier) then return nil end
+    if record then return record end
     local snapshot = {
         schemaVersion = M.RECORD_SCHEMA_VERSION,
         appearance = data.EugenesProneEquipmentAppearance or {},
@@ -314,6 +302,59 @@ local function removeSpawnedZombie(zombie)
     zombie:setSquare(nil)
 end
 
+local function getZombieIdentity(zombie)
+    if not zombie then return nil end
+    if BanditUtils and BanditUtils.GetZombieID then
+        local ok, id = pcall(BanditUtils.GetZombieID, zombie)
+        if ok and id ~= nil then return id end
+    end
+    return zombie:getPersistentOutfitID()
+end
+
+local function identityIsAvailable(zombie)
+    local id = getZombieIdentity(zombie)
+    if id == nil then return false end
+
+    -- Bandits adopts any ordinary zombie whose persistent-outfit identity is
+    -- already present in its cluster. That turns a set-down pacified zombie
+    -- into somebody else's NPC shell, after which companion persistence may
+    -- remove it. Reject the collision before moving any carrier contents.
+    if GetBanditClusterData then
+        local cluster = GetBanditClusterData(id)
+        if cluster and cluster[id] ~= nil then return false end
+    end
+
+    -- Persistent outfit IDs are not unique. Avoid sharing one with another
+    -- loaded zombie as well, since a later Bandits registration would be
+    -- unable to distinguish the two bodies.
+    local zombies = getCell():getZombieList()
+    for index = 0, zombies:size() - 1 do
+        local other = zombies:get(index)
+        if other ~= zombie and getZombieIdentity(other) == id then return false end
+    end
+    return true
+end
+
+local function createCollisionFreeZombie(square, femaleChance)
+    for attempt = 1, 12 do
+        local zombie
+        local ok = pcall(function()
+            -- A nil outfit follows the same supported random-shell path used
+            -- by True Companions. The previous empty outfit produced a narrow,
+            -- collision-prone identity pool (logged as "Dressed in ,").
+            zombie = createZombie(
+                square:getX(), square:getY(), square:getZ(), nil,
+                femaleChance, IsoDirections.S
+            )
+        end)
+        if ok and zombie then
+            if identityIsAvailable(zombie) then return zombie end
+            removeSpawnedZombie(zombie)
+        end
+    end
+    return nil
+end
+
 local function spawnStoredZombie(carrier, square)
     local record = migrateLegacyCarrier(carrier)
     if not record then return nil, "record" end
@@ -321,12 +362,7 @@ local function spawnStoredZombie(carrier, square)
     if not snapshot or not snapshot.appearance then return nil, "record" end
 
     local femaleChance = snapshot.appearance.female and 100 or 0
-    -- nil schedules a random outfit after spawning; an empty named outfit
-    -- creates a bare placeholder for the packed record to dress exactly.
-    local spawned = addZombiesInOutfit(
-        square:getX(), square:getY(), square:getZ(), 1, "", femaleChance
-    )
-    local zombie = spawned and spawned:size() > 0 and spawned:get(0) or nil
+    local zombie = createCollisionFreeZombie(square, femaleChance)
     if not zombie then return nil, "spawn" end
 
     zombie:clearWornItems()
@@ -412,12 +448,6 @@ local function wearOnTarget(playerObj, target, args)
         return
     end
     if location then target:setWornItem(location, item, false) end
-    if instanceof(target, "IsoZombie") and not location then
-        local cureApi = getZombieCureApi()
-        if cureApi and cureApi.acceptRestoredCompanionCombatItem then
-            cureApi.acceptRestoredCompanionCombatItem(target, item)
-        end
-    end
     if instanceof(target, "IsoZombie") then syncZombieVisuals(target) end
     notify(
         playerObj,
@@ -472,18 +502,7 @@ local function takeFromTarget(playerObj, target, args)
     if wasSecondary then target:setSecondaryHandItem(nil) end
     if target:isAttachedItem(item) then target:removeAttachedItem(item) end
     M.clearRecordWearMarker(item)
-    local moved = false
-    if instanceof(target, "IsoZombie") and (wasPrimary or wasSecondary) then
-        local cureApi = getZombieCureApi()
-        if cureApi and cureApi.takeRestoredCompanionWeapon then
-            moved = cureApi.takeRestoredCompanionWeapon(
-                target,
-                item,
-                playerObj:getInventory()
-            ) == true
-        end
-    end
-    if not moved then moved = moveItem(item, playerObj:getInventory()) end
+    local moved = moveItem(item, playerObj:getInventory())
     if not moved then
         if previousLocation then target:setWornItem(previousLocation, item, false) end
         if wasPrimary then target:setPrimaryHandItem(item) end

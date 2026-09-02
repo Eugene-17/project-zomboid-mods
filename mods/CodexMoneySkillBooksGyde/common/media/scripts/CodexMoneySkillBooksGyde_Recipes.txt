@@ -1,0 +1,143 @@
+module CodexMoneySkillBooksGyde
+{
+    craftRecipe BuyTraitMagazine_Base_NutritionistMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 40 [Base.Money],
+        }
+        outputs { item 1 Base.NutritionistMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_OrganizedMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 80 [Base.Money],
+        }
+        outputs { item 1 Base.OrganizedMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_SpeedDemonMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 20 [Base.Money],
+        }
+        outputs { item 1 Base.SpeedDemonMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_OutdoorsmanMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 40 [Base.Money],
+        }
+        outputs { item 1 Base.OutdoorsmanMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_HandyMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 160 [Base.Money],
+        }
+        outputs { item 1 Base.HandyMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_FastReaderMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 40 [Base.Money],
+        }
+        outputs { item 1 Base.FastReaderMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_FastLearnerMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 120 [Base.Money],
+        }
+        outputs { item 1 Base.FastLearnerMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_AxeManMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+        }
+        outputs { item 1 Base.AxeManMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_BurglarMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+        }
+        outputs { item 1 Base.BurglarMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_GracefulMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 80 [Base.Money],
+        }
+        outputs { item 1 Base.GracefulMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_DextrousMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 40 [Base.Money],
+        }
+        outputs { item 1 Base.DextrousMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_InconspicuousMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 80 [Base.Money],
+        }
+        outputs { item 1 Base.InconspicuousMag, }
+    }
+
+    craftRecipe BuyTraitMagazine_Base_KeenHearingMag
+    {
+        timedAction = Making, time = 20, AllowBatchCraft = false, Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 120 [Base.Money],
+        }
+        outputs { item 1 Base.KeenHearingMag, }
+    }
+}

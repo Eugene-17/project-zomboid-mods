@@ -3,14 +3,14 @@ require "BanditCustom"
 require "BanditServerSpawner"
 require "Bandit"
 require "BanditBrain"
-require "BanditNames"
 require "BanditUtils"
 
 local M = EugenesZombieCure
 local EPE = EugenesProneEquipment
 local pendingRestorations = {}
 local pendingSerums = setmetatable({}, { __mode = "k" })
-local restoredUpgradeTicks = 0
+local RECRUIT_RETRY_TICKS = 60
+local RESTORATION_TIMEOUT_TICKS = 1800
 
 local function notify(playerObj, message, ok)
     if isServer() then
@@ -21,12 +21,31 @@ local function notify(playerObj, message, ok)
 end
 
 local function findZombieByOnlineId(onlineId)
+    if not onlineId then return nil end
     local zombies = getCell():getZombieList()
     for index = 0, zombies:size() - 1 do
         local zombie = zombies:get(index)
         if zombie:getOnlineID() == onlineId then return zombie end
     end
     return nil
+end
+
+local function ensureZombieInventory(zombie)
+    local data = zombie:getModData()
+    if data.EugenesProneEquipmentInitialized then return end
+    zombie:DoZombieInventory()
+    data.EugenesProneEquipmentInitialized = true
+end
+
+local function getBanditBrain(zombie)
+    if not zombie then return nil end
+    if BanditBrain and BanditBrain.Get then
+        local brain = BanditBrain.Get(zombie)
+        if brain then return brain end
+    end
+    local id = zombie:getPersistentOutfitID()
+    local cluster = GetBanditClusterData and GetBanditClusterData(id) or nil
+    return cluster and cluster[id] or zombie:getModData().brain
 end
 
 local function findCorpse(args)
@@ -56,12 +75,51 @@ local function consumeTreatment(playerObj, itemId, expectedType)
     return true
 end
 
+local function moveTreatmentToContainer(playerObj, itemId, expectedType, destination)
+    local item = playerObj:getInventory():getItemWithIDRecursiv(itemId)
+    if not destination or not M.hasTreatmentItem(playerObj, item)
+        or item:getFullType() ~= expectedType then
+        return nil
+    end
+
+    local source = item:getContainer()
+    if not source then return nil end
+    if isServer() then sendRemoveItemFromContainer(source, item) end
+    source:Remove(item)
+    destination:AddItem(item)
+    if not destination:containsRecursive(item) then
+        source:AddItem(item)
+        if isServer() then sendAddItemToContainer(source, item) end
+        return nil
+    end
+    if isServer() then sendAddItemToContainer(destination, item) end
+    return item
+end
+
+local function purgePacifyingCures(container)
+    if not container then return 0 end
+    local cures = container:getAllEvalRecurse(function(item)
+        return M.isCureItem(item)
+    end)
+    local removed = 0
+    for index = cures:size() - 1, 0, -1 do
+        local item = cures:get(index)
+        local source = item and item:getContainer() or nil
+        if source then
+            if isServer() then sendRemoveItemFromContainer(source, item) end
+            source:Remove(item)
+            removed = removed + 1
+        end
+    end
+    return removed
+end
+
 local function purgeZombieRecords(container)
     if not container then return 0 end
-    local removed = 0
     local records = container:getAllEvalRecurse(function(item)
         return EPE.isZombieRecord(item)
     end)
+    local removed = 0
     for index = records:size() - 1, 0, -1 do
         local item = records:get(index)
         local source = item and item:getContainer() or nil
@@ -110,8 +168,10 @@ local function cureZombie(playerObj, args, directTarget)
         notify(playerObj, getText("IGUI_EZC_ZombieInvalid"), false)
         return
     end
+    ensureZombieInventory(zombie)
     local itemId = tonumber(args.itemId)
-    if not itemId or not consumeTreatment(playerObj, itemId, M.ITEM_FULL_TYPE) then
+    if not itemId or not moveTreatmentToContainer(
+        playerObj, itemId, M.ITEM_FULL_TYPE, zombie:getInventory()) then
         notify(playerObj, getText("IGUI_EZC_CureMissing"), false)
         return
     end
@@ -140,7 +200,6 @@ local function reanimateCorpse(playerObj, args, directTarget)
         notify(playerObj, getText("IGUI_EZC_StimulantMissing"), false)
         return
     end
-
     purgeZombieRecords(corpse:getContainer())
     local ok, result = pcall(function() corpse:reanimateNow() end)
     if not ok then
@@ -155,16 +214,20 @@ local function reanimateCorpse(playerObj, args, directTarget)
     notify(playerObj, getText("IGUI_EZC_CorpseReanimated"), true)
 end
 
-local function chooseFriendlyBanditProfile(zombie)
+local function chooseTrueCompanionProfile(zombie)
+    BanditCustom.Load()
     local matching = {}
     local fallback = {}
     for bid, profile in pairs(BanditCustom.GetAll()) do
         local general = profile and profile.general
-        local clan = general and BanditCustom.ClanGet(general.cid)
-        if clan and clan.spawn and clan.spawn.friendly then
-            fallback[#fallback + 1] = bid
+        local cid = general and general.cid
+        local clan = cid and BanditCustom.ClanGet(cid) or nil
+        local spawn = clan and clan.spawn
+        if spawn and spawn.friendly and spawn.companion then
+            local candidate = { bid = bid, cid = cid, profile = profile }
+            fallback[#fallback + 1] = candidate
             if (general.female == true) == zombie:isFemale() then
-                matching[#matching + 1] = bid
+                matching[#matching + 1] = candidate
             end
         end
     end
@@ -173,644 +236,281 @@ local function chooseFriendlyBanditProfile(zombie)
     return choices[ZombRand(#choices) + 1]
 end
 
-local function findSpawnedBandit(expectedKey)
+local function spawnThroughTrueCompanions(playerObj, choice, key, x, y, z)
+    if not choice or not BanditServer or not BanditServer.Spawner
+        or not BanditServer.Spawner.Clan then
+        return false, "True Companions clan spawner is unavailable"
+    end
+
+    local originalGetFromClan = BanditCustom.GetFromClan
+    BanditCustom.GetFromClan = function(cid)
+        local all = originalGetFromClan(cid)
+        if all and all[choice.bid] then
+            return { [choice.bid] = all[choice.bid] }
+        end
+        return all
+    end
+
+    local args = {
+        cid = choice.cid,
+        x = x,
+        y = y,
+        z = z,
+        program = "NPCNeutral",
+        size = 1,
+        key = key,
+        permanent = true,
+        hostile = false,
+        hostileP = false,
+    }
+    local ok, err = pcall(BanditServer.Spawner.Clan, playerObj, args)
+    BanditCustom.GetFromClan = originalGetFromClan
+    if ok and TransmitBanditModData then TransmitBanditModData() end
+    return ok, err
+end
+
+local function findSpawnedCompanion(expectedKey)
     local zombies = getCell():getZombieList()
     for index = 0, zombies:size() - 1 do
         local zombie = zombies:get(index)
-        local id = zombie:getPersistentOutfitID()
-        local cluster = GetBanditClusterData(id)
-        local brain = cluster and cluster[id]
-        if brain and brain.key == expectedKey then
-            return zombie
-        end
+        local brain = getBanditBrain(zombie)
+        if brain and brain.key == expectedKey then return zombie, brain end
     end
-    return nil
+    return nil, nil
 end
 
 local function removeCompanion(companion)
     if not companion then return end
     local id = companion:getPersistentOutfitID()
-    local cluster = GetBanditClusterData(id)
+    local cluster = GetBanditClusterData and GetBanditClusterData(id) or nil
     if cluster then
         cluster[id] = nil
-        TransmitBanditCluster(id)
+        if TransmitBanditCluster then TransmitBanditCluster(id) end
     end
     companion:removeFromWorld()
     companion:removeFromSquare()
     companion:setSquare(nil)
 end
 
-local function moveAllItemsWithoutSync(source, destination)
-    if not source or not destination then return end
+local function clearContainer(container)
+    if not container then return end
+    local items = container:getItems()
+    for index = items:size() - 1, 0, -1 do
+        local item = items:get(index)
+        if isServer() then sendRemoveItemFromContainer(container, item) end
+        container:Remove(item)
+    end
+end
+
+local function emptyCompanionInventory(companion)
+    if not companion then return end
+    pcall(function()
+        companion:setPrimaryHandItem(nil)
+        companion:setSecondaryHandItem(nil)
+        companion:clearWornItems()
+        local attached = companion:getAttachedItems()
+        for index = attached:size() - 1, 0, -1 do
+            local item = attached:get(index):getItem()
+            if item then companion:removeAttachedItem(item) end
+        end
+    end)
+    clearContainer(companion:getInventory())
+end
+
+local function dropZombieBelongings(zombie)
+    local source = zombie and zombie:getInventory()
+    local square = zombie and zombie:getSquare()
+    if not source or not square then return false end
+    purgeZombieRecords(source)
+    purgePacifyingCures(source)
+    zombie:clearWornItems()
+
+    -- Drop top-level items as themselves so backpacks and other containers keep
+    -- their contents. Internal wear markers must not leak onto lootable items.
     local items = source:getItems()
     for index = items:size() - 1, 0, -1 do
         local item = items:get(index)
+        if isServer() then sendRemoveItemFromContainer(source, item) end
         source:Remove(item)
-        destination:AddItem(item)
+        EPE.clearRecordWearMarker(item)
+        square:AddWorldInventoryItem(
+            item,
+            ZombRandFloat(0.25, 0.75),
+            ZombRandFloat(0.25, 0.75),
+            0.0
+        )
     end
-end
-
-local function makeEmptyWeapons()
-    return {
-        melee = "Base.BareHands",
-        primary = { bulletsLeft = 0, magCount = 0 },
-        secondary = { bulletsLeft = 0, magCount = 0 },
-    }
-end
-
-local function getRestoredCompanionBrain(companion)
-    if not companion or not instanceof(companion, "IsoZombie") then return nil end
-    local id = companion:getPersistentOutfitID()
-    local cluster = GetBanditClusterData and GetBanditClusterData(id) or nil
-    local brain = cluster and cluster[id] or companion:getModData().brain
-    if not M.isRestoredCompanionBrain(brain) then return nil end
-    brain.weapons = brain.weapons or makeEmptyWeapons()
-    brain.weapons.melee = brain.weapons.melee or "Base.BareHands"
-    brain.weapons.primary = brain.weapons.primary or { bulletsLeft = 0, magCount = 0 }
-    brain.weapons.secondary = brain.weapons.secondary or { bulletsLeft = 0, magCount = 0 }
-    return brain, cluster, id
-end
-
-local function syncRestoredCompanionBrain(companion, brain, cluster, id)
-    brain.tasks = {}
-    companion:getModData().brain = brain
-    if BanditBrain and BanditBrain.Update then BanditBrain.Update(companion, brain) end
-    if cluster then
-        cluster[id] = brain
-        if TransmitBanditCluster then TransmitBanditCluster(id) end
-    end
-end
-
-local function removeInventoryItem(item)
-    local source = item and item:getContainer()
-    if not source then return false end
-    if isServer() then sendRemoveItemFromContainer(source, item) end
-    source:Remove(item)
     return true
 end
 
-local function addInventoryItem(container, item)
-    if not container or not item then return false end
-    container:AddItem(item)
-    if isServer() then sendAddItemToContainer(container, item) end
-    return true
-end
-
-local function addItemType(container, fullType)
-    local item = fullType and instanceItem(fullType) or nil
-    if item then addInventoryItem(container, item) end
-    return item
-end
-
-local function materializeRangedAmmo(container, weapon)
-    if not weapon then return end
-    if weapon.type == "mag" and weapon.magName then
-        for _ = 1, math.max(0, tonumber(weapon.magCount) or 0) do
-            local magazine = instanceItem(weapon.magName)
-            if magazine then
-                pcall(function() magazine:setMaxAmmo(tonumber(weapon.magSize) or 0) end)
-                pcall(function() magazine:setCurrentAmmoCount(tonumber(weapon.magSize) or 0) end)
-                addInventoryItem(container, magazine)
-            end
-        end
-    elseif weapon.type == "nomag" and weapon.ammoName then
-        for _ = 1, math.max(0, tonumber(weapon.ammoCount) or 0) do
-            addItemType(container, weapon.ammoName)
-        end
-    end
-end
-
-local function materializeWeapon(companion, weapon)
-    local fullType = type(weapon) == "table" and weapon.name or weapon
-    if not fullType or fullType == "Base.BareHands" then return end
-    local inventory = companion:getInventory()
-    local item = instanceItem(fullType)
-    if item and type(weapon) == "table" then
-        pcall(function() item:setCurrentAmmoCount(math.max(0, tonumber(weapon.bulletsLeft) or 0)) end)
-        pcall(function() item:setContainsClip(weapon.clipIn == true) end)
-    end
-    if item then addInventoryItem(inventory, item) end
-    if type(weapon) == "table" then materializeRangedAmmo(inventory, weapon) end
-end
-
-local function makeRangedWeapon(item)
-    local weapon = {
-        name = item:getFullType(),
-        bulletsLeft = math.max(0, tonumber(item:getCurrentAmmoCount()) or 0),
-        racked = true,
-    }
-    if BanditCompatibility.UsesExternalMagazine(item) then
-        weapon.type = "mag"
-        weapon.magName = item:getMagazineType()
-        weapon.magSize = math.max(1, tonumber(item:getMaxAmmo()) or 1)
-        weapon.magCount = 0
-        local containsClip = false
-        pcall(function() containsClip = item:isContainsClip() end)
-        weapon.clipIn = containsClip or weapon.bulletsLeft > 0
-    else
-        local ammoType = item:getAmmoType()
-        weapon.type = "nomag"
-        weapon.ammoName = ammoType and ammoType:getItemKey() or nil
-        weapon.ammoSize = math.max(1, tonumber(item:getMaxAmmo()) or 1)
-        weapon.ammoCount = 0
-    end
-    return weapon
-end
-
-local function getWeaponSlot(item)
-    if not item or not item:IsWeapon() then return nil end
-    local weaponType = WeaponType.getWeaponType(item)
-    if weaponType == WeaponType.FIREARM then return "primary" end
-    if weaponType == WeaponType.HANDGUN then return "secondary" end
-    return "melee"
-end
-
-local function tryAddRangedAmmo(weapons, item)
-    for _, slotName in ipairs({ "primary", "secondary" }) do
-        local weapon = weapons[slotName]
-        if weapon and weapon.name then
-            if weapon.type == "mag" and weapon.magName == item:getFullType() then
-                local bullets = 0
-                pcall(function() bullets = math.max(0, tonumber(item:getCurrentAmmoCount()) or 0) end)
-                if bullets > 0 then
-                    if (tonumber(weapon.bulletsLeft) or 0) <= 0 and weapon.clipIn ~= true then
-                        weapon.bulletsLeft = bullets
-                        weapon.clipIn = true
-                        weapon.racked = false
-                    else
-                        weapon.magCount = (tonumber(weapon.magCount) or 0) + 1
-                    end
-                    return true
-                end
-            elseif weapon.type == "nomag" and weapon.ammoName == item:getFullType() then
-                weapon.ammoCount = (tonumber(weapon.ammoCount) or 0) + 1
-                return true
-            end
-        end
-    end
-    return false
-end
-
-function M.acceptRestoredCompanionCombatItem(companion, item)
-    local brain, cluster, id = getRestoredCompanionBrain(companion)
-    if not brain or not item then return false end
-
-    local slotName = getWeaponSlot(item)
-    if slotName and not item:isBroken() then
-        local previous = brain.weapons[slotName]
-        if slotName == "melee" then
-            materializeWeapon(companion, previous)
-            brain.weapons.melee = item:getFullType()
-        else
-            materializeWeapon(companion, previous)
-            brain.weapons[slotName] = makeRangedWeapon(item)
-        end
-        removeInventoryItem(item)
-        syncRestoredCompanionBrain(companion, brain, cluster, id)
-        companion:setPrimaryHandItem(nil)
-        companion:setSecondaryHandItem(nil)
-        local equipped = pcall(Bandit.SetHands, companion, item:getFullType())
-        if not equipped then
-            companion:setPrimaryHandItem(instanceItem(item:getFullType()))
-        end
-        if companion.resetEquippedHandsModels then companion:resetEquippedHandsModels() end
-        M.updateRestoredItemsToSpawnAtDeath(companion)
-        return true
-    end
-
-    if tryAddRangedAmmo(brain.weapons, item) then
-        removeInventoryItem(item)
-        syncRestoredCompanionBrain(companion, brain, cluster, id)
-        M.updateRestoredItemsToSpawnAtDeath(companion)
-        return true
-    end
-    return false
-end
-
-function M.takeRestoredCompanionWeapon(companion, item, destination)
-    local brain, cluster, id = getRestoredCompanionBrain(companion)
-    if not brain or not item or not destination or item:getContainer() then return false end
-    local fullType = item:getFullType()
-    local slotName
-    if brain.weapons.primary.name == fullType then
-        slotName = "primary"
-    elseif brain.weapons.secondary.name == fullType then
-        slotName = "secondary"
-    elseif brain.weapons.melee == fullType then
-        slotName = "melee"
-    end
-    if not slotName then return false end
-
-    local stored = brain.weapons[slotName]
-    if type(stored) == "table" then
-        pcall(function() item:setCurrentAmmoCount(math.max(0, tonumber(stored.bulletsLeft) or 0)) end)
-        pcall(function() item:setContainsClip(stored.clipIn == true) end)
-        materializeRangedAmmo(companion:getInventory(), stored)
-        brain.weapons[slotName] = { bulletsLeft = 0, magCount = 0 }
-    else
-        brain.weapons.melee = "Base.BareHands"
-    end
-    companion:setPrimaryHandItem(nil)
-    companion:setSecondaryHandItem(nil)
-    addInventoryItem(destination, item)
-    syncRestoredCompanionBrain(companion, brain, cluster, id)
-    M.updateRestoredItemsToSpawnAtDeath(companion)
-    if companion.resetEquippedHandsModels then companion:resetEquippedHandsModels() end
-    return true
-end
-
-local function clearCompanionEquipment(companion)
-    companion:setPrimaryHandItem(nil)
-    companion:setSecondaryHandItem(nil)
-    local attachedItems = companion:getAttachedItems()
-    for index = attachedItems:size() - 1, 0, -1 do
-        local entry = attachedItems:get(index)
-        local item = entry and entry:getItem() or nil
-        if item then companion:removeAttachedItem(item) end
-    end
-    if companion.resetEquippedHandsModels then companion:resetEquippedHandsModels() end
-end
-
-local function acceptAllItems(item)
-    return item ~= nil
-end
-
-function M.updateRestoredItemsToSpawnAtDeath(companion)
-    if not companion then return end
-    local brain = companion:getModData().brain
-    if brain and brain.weapons and Bandit and Bandit.UpdateItemsToSpawnAtDeath then
-        Bandit.UpdateItemsToSpawnAtDeath(companion, brain)
-        return
-    end
-    companion:clearItemsToSpawnAtDeath()
-    local items = ArrayList.new()
-    companion:getInventory():getAllEvalRecurse(acceptAllItems, items)
-    for index = 0, items:size() - 1 do
-        local item = items:get(index)
-        item:getModData().preserve = true
-        companion:addItemToSpawnAtDeath(item)
-    end
-end
-
-local function makeRecordNetworkVisuals(snapshot)
-    local visuals = {}
-    for _, row in ipairs(snapshot and snapshot.worn or {}) do
-        local tint = row.tint or {}
-        visuals[#visuals + 1] = {
-            fullType = row.fullType,
-            hue = row.hue,
-            baseTexture = row.baseTexture,
-            textureChoice = row.textureChoice,
-            tintR = tint.r,
-            tintG = tint.g,
-            tintB = tint.b,
-            tintA = tint.a,
-        }
-    end
-    return visuals
-end
-
-local function syncRecordVisuals(companion, snapshot)
-    if not isServer() then return end
-    sendServerCommand(EPE.MODULE, "zombieVisuals", {
-        targetId = companion:getOnlineID(),
-        targetX = math.floor(companion:getX()),
-        targetY = math.floor(companion:getY()),
-        targetZ = math.floor(companion:getZ()),
-        appearance = snapshot.appearance,
-        visuals = makeRecordNetworkVisuals(snapshot),
-    })
-end
-
-local function makeBanditClothing(snapshot)
-    local clothing = {}
-    local tint = {}
-    for _, row in ipairs(snapshot and snapshot.worn or {}) do
-        local bodyLocation = row.banditLocation or row.location
-        if bodyLocation then
-            bodyLocation = tostring(bodyLocation):gsub("^.-:", ""):gsub("^.-%.", "")
-        end
-        if bodyLocation and row.fullType then
-            clothing[bodyLocation] = row.fullType
-            local color = row.tint
-            if color and BanditUtils and BanditUtils.rgb2dec then
-                tint[bodyLocation] = BanditUtils.rgb2dec(
-                    color.r or 1,
-                    color.g or 1,
-                    color.b or 1
-                )
-            end
-        end
-    end
-    return clothing, tint
-end
-
-function M.updateRestoredCompanionSnapshot(companion, brain, snapshot)
-    if not companion or not M.isRestoredCompanionBrain(brain) or not snapshot then
-        return false
-    end
-    brain.EugenesZombieCureSnapshot = snapshot
-    brain.EugenesZombieCureVisualVersion = M.RESTORED_VISUAL_VERSION
-    brain.clothing, brain.tint = makeBanditClothing(snapshot)
-    if snapshot.appearance and snapshot.appearance.female ~= nil then
-        brain.female = snapshot.appearance.female == true
-    end
-    -- These generated Bandits profile fields overwrite the exact appearance
-    -- restored from the physical zombie snapshot on every update.
-    brain.skin = nil
-    brain.hairType = nil
-    brain.beardType = nil
-    brain.hairColor = nil
-    return true
-end
-
-local function makeCompanionName(female)
-    if BanditNames and BanditNames.GenerateName then
-        local ok, name = pcall(BanditNames.GenerateName, female == true)
-        if ok and name and name ~= "" then return name end
-    end
-    return getText(female and "IGUI_EZC_FallbackNameFemale" or "IGUI_EZC_FallbackNameMale")
-end
-
-local function getMasterId(playerObj)
-    if playerObj and BanditUtils and BanditUtils.GetCharacterID then
-        local ok, id = pcall(BanditUtils.GetCharacterID, playerObj)
-        if ok then return id end
-    end
-    return nil
-end
-
-local function configureRestoredCompanion(companion, pending)
-    local record = EPE.findZombieRecord(pending.zombie:getInventory())
-    local snapshot = EPE.getZombieRecordSnapshot(record)
-    if not record or not snapshot then error("physical zombie record is missing") end
-    pending.previousRestoredName = snapshot.restoredName
-    snapshot.restoredName = pending.fullname
-
-    local id = companion:getPersistentOutfitID()
-    local cluster = GetBanditClusterData(id)
-    local brain = cluster and cluster[id] or companion:getModData().brain
-    if not brain then error("Bandits companion brain is unavailable") end
-
-    brain.EugenesZombieCureRestored = true
-    brain.EugenesZombieCureRecordVersion = EPE.RECORD_SCHEMA_VERSION
-    brain.EugenesZombieCureEquipmentVersion = M.RESTORED_EQUIPMENT_VERSION
-    brain.EugenesZombieCureSnapshot = snapshot
-    brain.fullname = pending.fullname
-    brain.female = snapshot.appearance and snapshot.appearance.female == true
-    brain.master = pending.masterId or brain.master
-    brain.permanent = true
-    brain.loyal = true
-    brain.hostile = false
-    brain.hostileP = false
-    brain.stationary = false
-    brain.sleeping = false
-    brain.tasks = {}
-    brain.program = { name = "Companion", stage = "Prepare" }
-    brain.programFallback = "Companion"
-    M.updateRestoredCompanionSnapshot(companion, brain, snapshot)
-    brain.bag = nil
-    brain.weapons = makeEmptyWeapons()
-    brain.inventory = {}
-    brain.loot = {}
-    brain.key = nil
-
-    companion:getModData().brain = brain
-    if BanditBrain and BanditBrain.Update then BanditBrain.Update(companion, brain) end
-    if cluster then
-        cluster[id] = brain
-        TransmitBanditCluster(id)
-    end
-
-    clearCompanionEquipment(companion)
-    companion:clearWornItems()
-    companion:getInventory():removeAllItems()
-    pending.inventoryTransferred = true
-    moveAllItemsWithoutSync(pending.zombie:getInventory(), companion:getInventory())
-    if not EPE.applyZombieRecord(companion, record, false) then
-        error("physical zombie record could not be applied")
-    end
-    record = EPE.createZombieRecordFromSnapshot(snapshot, companion:getInventory())
-    if not record then error("physical zombie record could not be named") end
-    companion:setTarget(nil)
-    companion:clearAggroList()
-    companion:setTargetSeenTime(0)
-    M.updateRestoredItemsToSpawnAtDeath(companion)
-    syncRecordVisuals(companion, snapshot)
-    companion:resetModelNextFrame()
-    companion:setVariable("BanditWalkType", "Walk")
-    companion:setWalkType("Walk")
-end
-
-local function rollbackCompanionInventory(companion, pending)
-    local zombie = pending and pending.zombie
-    if not companion or not zombie or not pending.inventoryTransferred then return end
-    moveAllItemsWithoutSync(companion:getInventory(), zombie:getInventory())
-    pending.inventoryTransferred = false
-    local record = EPE.findZombieRecord(zombie:getInventory())
-    local snapshot = EPE.getZombieRecordSnapshot(record)
-    if snapshot then
-        snapshot.restoredName = pending.previousRestoredName
-        record = EPE.createZombieRecordFromSnapshot(snapshot, zombie:getInventory())
-    end
-    if record then EPE.applyZombieRecord(zombie, record, true) end
-end
-
-local function safeRollbackCompanionInventory(companion, pending)
-    local ok, rollbackError = pcall(rollbackCompanionInventory, companion, pending)
-    if not ok then
-        print("[EugenesZombieCure] companion rollback failed: " .. tostring(rollbackError))
-    end
-end
-
-local function clearPendingSerum(pending)
+local function clearPending(pending)
     if pending and pending.serum then pendingSerums[pending.serum] = nil end
 end
 
-local function finishPendingRestoration(key, pending, companion)
+local function failPending(key, pending, message)
     pendingRestorations[key] = nil
-    clearPendingSerum(pending)
+    clearPending(pending)
+    if pending.companion and not pending.sourceRemoved then
+        removeCompanion(pending.companion)
+    elseif pending.sourceRemoved then
+        -- The committed companion now owns the source zombie's real items. If
+        -- recruitment/persistence ever times out, preserve it downed rather
+        -- than deleting the player's only remaining copy of those belongings.
+        print("[EugenesZombieCure] committed restoration could not finalize; "
+            .. "the configured companion was preserved downed: " .. tostring(key))
+    end
+    if pending.playerObj then notify(pending.playerObj, message, false) end
+end
+
+local function finishRestoration(key, pending)
     local playerObj = pending.playerObj
-    local zombie = pending.zombie
-    if not playerObj or not M.isPacifiedZombie(zombie) then
-        if zombie then purgeZombieRecords(zombie:getInventory()) end
-        removeCompanion(companion)
-        if playerObj then notify(playerObj, getText("IGUI_EZC_SourceMissing"), false) end
+    local companion = pending.companion
+    local snapshot = pending.snapshot
+    if not playerObj or not companion or type(snapshot) ~= "table" then
+        failPending(key, pending, getText("IGUI_EZC_SourceMissing"))
+        return
+    end
+    local companionBrain = getBanditBrain(companion)
+    if not snapshot or not M.configureRestoredCompanion(
+            companion, snapshot, true, companionBrain) then
+        failPending(key, pending, getText("IGUI_EZC_ConfigureFailed"))
         return
     end
 
-    local configured, configureError = pcall(configureRestoredCompanion, companion, pending)
-    if not configured then
-        print("[EugenesZombieCure] companion configuration failed: " .. tostring(configureError))
-        safeRollbackCompanionInventory(companion, pending)
-        purgeZombieRecords(zombie:getInventory())
-        removeCompanion(companion)
-        notify(playerObj, getText("IGUI_EZC_ConfigureFailed"), false)
-        return
+    pendingRestorations[key] = nil
+    clearPending(pending)
+    local configuredBrain = getBanditBrain(companion)
+    if not isServer() and configuredBrain and BanditsNPC
+        and BanditsNPC.Persistence and BanditsNPC.Persistence.Record then
+        pcall(function()
+            BanditsNPC.Persistence.Record(companion, configuredBrain)
+        end)
     end
-    if not consumeTreatment(playerObj, pending.itemId, M.RESTORATION_ITEM_FULL_TYPE) then
-        safeRollbackCompanionInventory(companion, pending)
-        purgeZombieRecords(zombie:getInventory())
-        removeCompanion(companion)
-        notify(playerObj, getText("IGUI_EZC_SerumMissing"), false)
-        return
+    local brain = getBanditBrain(companion)
+    local persistentId = companion:getPersistentOutfitID()
+    if brain and TransmitBanditCluster then TransmitBanditCluster(persistentId) end
+    if isServer() then
+        sendServerCommand(playerObj, M.MODULE, "configureRestoredCompanion", {
+            key = key,
+            targetId = companion:getOnlineID(),
+            targetPersistentId = persistentId,
+            snapshot = snapshot,
+        })
+    end
+    notify(playerObj, getText("IGUI_EZC_RestorationSuccess"), true)
+end
+
+local function commitInstantRestoration(
+    playerObj, zombie, companion, brain, itemId)
+    local snapshot = EPE.makeZombieSnapshot(zombie)
+    if not snapshot then return nil, "snapshot-unavailable" end
+
+    emptyCompanionInventory(companion)
+    local configured, configureResult = pcall(
+        M.configureRestoredCompanion,
+        companion,
+        snapshot,
+        true,
+        brain
+    )
+    if not configured or configureResult ~= true then
+        return nil, configured and "configuration-rejected"
+            or tostring(configureResult)
     end
 
-    purgeZombieRecords(companion:getInventory())
-    M.updateRestoredItemsToSpawnAtDeath(companion)
+    if not consumeTreatment(
+            playerObj, itemId, M.RESTORATION_ITEM_FULL_TYPE) then
+        return nil, "serum-missing"
+    end
+
+    -- Commit in one Lua call: the temporary NPC is already configured downed
+    -- and visually matches the source, while all physical belongings are left
+    -- on the ground and the companion inventory stays empty.
+    if not dropZombieBelongings(zombie) then
+        return nil, "drop-square-unavailable"
+    end
     M.clearPacifiedZombieState(zombie)
     zombie:removeFromWorld()
     zombie:removeFromSquare()
     zombie:setSquare(nil)
-    notify(playerObj, getText("IGUI_EZC_RestorationSuccess"), true)
+
+    local persistentId = companion:getPersistentOutfitID()
+    if TransmitBanditCluster then TransmitBanditCluster(persistentId) end
+    return snapshot, nil
 end
 
 local function processPendingRestorations()
     for key, pending in pairs(pendingRestorations) do
-        local companion = findSpawnedBandit(key)
-        if companion then
-            print(string.format(
-                "[EugenesZombieCure] restoration verified key=%s after %s tick(s)",
-                tostring(key),
-                tostring(pending.ticks)
-            ))
-            finishPendingRestoration(key, pending, companion)
+        if pending.failed then
+            failPending(key, pending, getText("IGUI_EZC_ConfigureFailed"))
         else
-            pending.ticks = pending.ticks + 1
-            if pending.ticks >= 300 then
-                print(string.format(
-                    "[EugenesZombieCure] restoration timed out key=%s bid=%s",
-                    tostring(key),
-                    tostring(pending.bid)
-                ))
-                pendingRestorations[key] = nil
-                clearPendingSerum(pending)
-                if pending.zombie then purgeZombieRecords(pending.zombie:getInventory()) end
-                notify(pending.playerObj, getText("IGUI_EZC_SpawnTimedOut"), false)
+            local companion, brain = pending.companion, nil
+            if companion then brain = getBanditBrain(companion) end
+            if not companion or not brain then
+                companion, brain = findSpawnedCompanion(key)
+                pending.companion = companion
             end
-        end
-    end
-end
 
-local function getFirstPlayer()
-    if not isServer() then return getSpecificPlayer(0) end
-    local players = getOnlinePlayers and getOnlinePlayers() or nil
-    if players and players:size() > 0 then return players:get(0) end
-    return nil
-end
+            if companion and brain then
+                local masterId = BanditUtils.GetCharacterID(pending.playerObj)
+                local recruited = brain.recruited == true and brain.master == masterId
+                -- In single player the server cluster brain exists before
+                -- BanditUpdate has attached that brain to the IsoZombie. True
+                -- Companions' Recruit() only reads the attached client brain,
+                -- so calling it during this gap always rejects the target.
+                local recruitBrainReady = isServer()
+                    or (BanditBrain and BanditBrain.Get
+                        and BanditBrain.Get(companion) ~= nil)
 
-local function upgradeExistingRestoredCompanions()
-    restoredUpgradeTicks = restoredUpgradeTicks + 1
-    if restoredUpgradeTicks < 300 then return end
-    restoredUpgradeTicks = 0
-    local zombies = getCell() and getCell():getZombieList()
-    if not zombies then return end
-    local defaultMaster = getFirstPlayer()
-    for index = 0, zombies:size() - 1 do
-        local zombie = zombies:get(index)
-        local id = zombie:getPersistentOutfitID()
-        local cluster = GetBanditClusterData(id)
-        local brain = cluster and cluster[id]
-        if M.isRestoredCompanionBrain(brain) then
-            local changed = false
-            local appearanceChanged = false
-            local record = EPE.findZombieRecord(zombie:getInventory())
-            local recordSnapshot = EPE.getZombieRecordSnapshot(record)
-                or brain.EugenesZombieCureSnapshot
-                or EPE.makeZombieSnapshot(zombie)
-            if purgeZombieRecords(zombie:getInventory()) > 0 then changed = true end
-            if type(brain.key) == "string" and string.sub(brain.key, 1, 12) == "ezc-restore-" then
-                brain.key = nil
-                changed = true
-            end
-            if brain.EugenesZombieCureRestored ~= true then
-                brain.EugenesZombieCureRestored = true
-                changed = true
-            end
-            if tonumber(brain.EugenesZombieCureRecordVersion) ~= EPE.RECORD_SCHEMA_VERSION then
-                brain.EugenesZombieCureRecordVersion = EPE.RECORD_SCHEMA_VERSION
-                changed = true
-            end
-            if recordSnapshot and tonumber(brain.EugenesZombieCureEquipmentVersion)
-                ~= M.RESTORED_EQUIPMENT_VERSION then
-                brain.clothing, brain.tint = makeBanditClothing(recordSnapshot)
-                brain.bag = nil
-                brain.weapons = makeEmptyWeapons()
-                brain.inventory = {}
-                brain.loot = {}
-                brain.EugenesZombieCureEquipmentVersion = M.RESTORED_EQUIPMENT_VERSION
-                clearCompanionEquipment(zombie)
-                changed = true
-            end
-            if recordSnapshot and tonumber(brain.EugenesZombieCureVisualVersion)
-                ~= M.RESTORED_VISUAL_VERSION then
-                M.updateRestoredCompanionSnapshot(zombie, brain, recordSnapshot)
-                appearanceChanged = true
-                changed = true
-            end
-            if recordSnapshot and recordSnapshot.appearance
-                and recordSnapshot.appearance.female ~= nil
-                and brain.female ~= (recordSnapshot.appearance.female == true) then
-                brain.female = recordSnapshot.appearance.female == true
-                changed = true
-            end
-            if not brain.fullname or brain.fullname == "" then
-                brain.fullname = recordSnapshot and recordSnapshot.restoredName
-                    or makeCompanionName(zombie:isFemale())
-                changed = true
-            end
-            if recordSnapshot and recordSnapshot.restoredName ~= brain.fullname then
-                recordSnapshot.restoredName = brain.fullname
-                changed = true
-            end
-            if recordSnapshot and brain.EugenesZombieCureSnapshot ~= recordSnapshot then
-                brain.EugenesZombieCureSnapshot = recordSnapshot
-                changed = true
-            end
-            local masterId = getMasterId(defaultMaster)
-            if masterId and not brain.master then
-                brain.master = masterId
-                changed = true
-            end
-            local programName = type(brain.program) == "table" and brain.program.name or brain.program
-            if programName ~= "Companion" and programName ~= "CompanionGuard" then
-                brain.program = { name = "Companion", stage = "Prepare" }
-                brain.programFallback = "Companion"
-                brain.tasks = {}
-                changed = true
-            end
-            if not brain.permanent or not brain.loyal or brain.hostile or brain.hostileP then
-                brain.permanent = true
-                brain.loyal = true
-                brain.hostile = false
-                brain.hostileP = false
-                changed = true
-            end
-            if changed then
-                zombie:getModData().brain = brain
-                cluster[id] = brain
-                TransmitBanditCluster(id)
-                M.updateRestoredItemsToSpawnAtDeath(zombie)
-                if appearanceChanged and recordSnapshot then
-                    M.clearRestoredRecordCache(zombie)
-                    M.activateRestoredCompanion(zombie, brain)
-                    syncRecordVisuals(zombie, recordSnapshot)
+                if recruited then
+                    local completed, failure = pcall(
+                        finishRestoration, key, pending)
+                    if not completed then
+                        print("[EugenesZombieCure] restoration completion failed: "
+                            .. tostring(failure))
+                        failPending(
+                            key, pending, getText("IGUI_EZC_ConfigureFailed"))
+                    end
+                elseif recruitBrainReady
+                    and pending.ticks >= (pending.nextRecruitTick or 0) then
+                    pending.recruitAttempts = (pending.recruitAttempts or 0) + 1
+                    pending.nextRecruitTick = pending.ticks + RECRUIT_RETRY_TICKS
+                    local recruitArgs = {
+                        key = key,
+                        targetId = companion:getOnlineID(),
+                        targetPersistentId = companion:getPersistentOutfitID(),
+                    }
+                    if isServer() then
+                        sendServerCommand(pending.playerObj, M.MODULE,
+                            "recruitTrueCompanion", recruitArgs)
+                    elseif M.recruitWithTrueCompanions then
+                        if not M.recruitWithTrueCompanions(recruitArgs, companion) then
+                            pending.lastRecruitFailure = "local-recruit-not-ready"
+                        end
+                    else
+                        pending.failed = true
+                    end
                 end
+            end
+
+            pending.ticks = pending.ticks + 1
+            if pendingRestorations[key] and pending.ticks % 300 == 0 then
                 print(string.format(
-                    "[EugenesZombieCure] migrated record-free companion id=%s name=%s",
-                    tostring(id),
-                    tostring(brain.fullname)
+                    "[EugenesZombieCure] waiting for True Companions key=%s ticks=%d attempts=%d companion=%s brain=%s lastFailure=%s",
+                    tostring(key),
+                    pending.ticks,
+                    pending.recruitAttempts or 0,
+                    tostring(companion ~= nil),
+                    tostring(brain ~= nil),
+                    tostring(pending.lastRecruitFailure)
                 ))
+            end
+            if pendingRestorations[key]
+                and pending.ticks >= RESTORATION_TIMEOUT_TICKS then
+                failPending(key, pending, getText("IGUI_EZC_SpawnTimedOut"))
             end
         end
     end
-end
-
-local function ensureZombieInventory(zombie)
-    local data = zombie:getModData()
-    if data.EugenesProneEquipmentInitialized then return end
-    zombie:DoZombieInventory()
-    data.EugenesProneEquipmentInitialized = true
 end
 
 local function restoreZombie(playerObj, args, directTarget)
@@ -819,20 +519,12 @@ local function restoreZombie(playerObj, args, directTarget)
         notify(playerObj, getText("IGUI_EZC_RestoreInvalid"), false)
         return
     end
-    local bid = chooseFriendlyBanditProfile(zombie)
-    if not bid or not BanditServer or not BanditServer.Spawner
-        or not BanditServer.Spawner.Individual then
-        notify(playerObj, getText("IGUI_EZC_ProfileUnavailable"), false)
-        return
-    end
 
-    local profile = BanditCustom.GetById(bid)
-    if not profile or not profile.general then
+    local choice = chooseTrueCompanionProfile(zombie)
+    if not choice then
         notify(playerObj, getText("IGUI_EZC_ProfileUnavailable"), false)
         return
     end
-    profile.general.bid = bid
-    profile.cid = profile.general.cid
 
     local itemId = tonumber(args.itemId)
     local serum = itemId and playerObj:getInventory():getItemWithIDRecursiv(itemId)
@@ -841,72 +533,104 @@ local function restoreZombie(playerObj, args, directTarget)
         notify(playerObj, getText("IGUI_EZC_SerumMissing"), false)
         return
     end
-    serum:getModData().EugenesZombieCureRestorationPending = nil
     if pendingSerums[serum] then
         notify(playerObj, getText("IGUI_EZC_RestorationPending"), false)
         return
     end
 
     ensureZombieInventory(zombie)
-    purgeZombieRecords(zombie:getInventory())
-    local record = EPE.createOrUpdateZombieRecord(zombie)
-    if not record then
-        notify(playerObj, getText("IGUI_EZC_RecordMissing"), false)
-        return
-    end
-
-    local spawnX = zombie:getX()
-    local spawnY = zombie:getY()
-    local spawnZ = zombie:getZ()
-    local companionName = makeCompanionName(zombie:isFemale())
-    local masterId = getMasterId(playerObj)
     local stamp = getTimestampMs and getTimestampMs() or 0
     local restorationKey = string.format(
-        "ezc-restore-%s-%s",
+        "ezc-tc-%s-%s",
         tostring(stamp),
         tostring(ZombRand(1000000000))
     )
-    local spawnArgs = {
-        bid = bid,
-        x = spawnX,
-        y = spawnY,
-        z = spawnZ,
-        program = "Companion",
-        key = restorationKey,
-        permanent = true,
-        loyal = true,
-        hostile = false,
-        hostileP = false,
-        fullname = companionName,
-    }
     pendingSerums[serum] = true
-    print(string.format(
-        "[EugenesZombieCure] requesting companion key=%s bid=%s at %.2f,%.2f,%.2f",
+    local spawnOk, spawnError = spawnThroughTrueCompanions(
+        playerObj,
+        choice,
         restorationKey,
-        tostring(bid),
-        spawnX,
-        spawnY,
-        spawnZ
-    ))
-    local spawnOk, spawnError = pcall(BanditServer.Spawner.Individual, playerObj, spawnArgs)
+        zombie:getX(),
+        zombie:getY(),
+        zombie:getZ()
+    )
     if not spawnOk then
-        print("[EugenesZombieCure] Bandits spawn rejected: " .. tostring(spawnError))
+        print("[EugenesZombieCure] True Companions spawn rejected: " .. tostring(spawnError))
         pendingSerums[serum] = nil
-        purgeZombieRecords(zombie:getInventory())
         notify(playerObj, getText("IGUI_EZC_SpawnRejected"), false)
         return
     end
+
+    local companion, brain = findSpawnedCompanion(restorationKey)
+    if not companion or not brain then
+        pendingSerums[serum] = nil
+        print("[EugenesZombieCure] True Companions spawn produced no keyed NPC: "
+            .. tostring(restorationKey))
+        notify(playerObj, getText("IGUI_EZC_SpawnRejected"), false)
+        return
+    end
+
+    local snapshot, commitError = commitInstantRestoration(
+        playerObj, zombie, companion, brain, itemId)
+    if not snapshot then
+        pendingSerums[serum] = nil
+        print("[EugenesZombieCure] instantaneous restoration rejected: "
+            .. tostring(commitError))
+        removeCompanion(companion)
+        notify(playerObj, getText("IGUI_EZC_ConfigureFailed"), false)
+        return
+    end
+
     pendingRestorations[restorationKey] = {
         playerObj = playerObj,
-        zombie = zombie,
+        companion = companion,
+        snapshot = snapshot,
+        sourceRemoved = true,
         serum = serum,
-        itemId = itemId,
-        bid = bid,
-        fullname = companionName,
-        masterId = masterId,
+        bid = choice.bid,
+        cid = choice.cid,
         ticks = 0,
     }
 end
+
+local function isLegacyRestoredBrain(brain)
+    return brain and (brain.EugenesZombieCureRestored == true
+        or (type(brain.key) == "string" and string.sub(brain.key, 1, 12) == "ezc-restore-"))
+end
+
+local function finishLegacyMigration(playerObj, args, directTarget)
+    local zombie = directTarget or findZombieByOnlineId(tonumber(args.targetId))
+    local brain = getBanditBrain(zombie)
+    if not zombie or not isLegacyRestoredBrain(brain) then return end
+    if brain.master ~= BanditUtils.GetCharacterID(playerObj) then return end
+
+    if type(brain.npcClothVar) ~= "table" then brain.npcClothVar = {} end
+    brain.npcClothVar.__EugenesZombieCure = { restored = true, fond = true }
+    brain.EugenesZombieCureRestored = nil
+    brain.EugenesZombieCureRecordVersion = nil
+    brain.EugenesZombieCureEquipmentVersion = nil
+    brain.EugenesZombieCureVisualVersion = nil
+    brain.EugenesZombieCureSnapshot = nil
+    if type(brain.key) == "string" and string.sub(brain.key, 1, 12) == "ezc-restore-" then
+        brain.key = nil
+    end
+    zombie:getModData().brain = brain
+    BanditBrain.Update(zombie, brain)
+    local id = zombie:getPersistentOutfitID()
+    local cluster = GetBanditClusterData and GetBanditClusterData(id) or nil
+    if cluster then
+        cluster[id] = brain
+        if TransmitBanditCluster then TransmitBanditCluster(id) end
+    end
+    purgeZombieRecords(zombie:getInventory())
+    zombie:getModData().EugenesProneEquipmentInitialized = nil
+    M.normalizeRestoredCompanionAnimation(zombie, brain)
+    zombie:resetModelNextFrame()
+    print("[EugenesZombieCure] migrated legacy restored NPC to True Companions: "
+        .. tostring(brain.fullname or brain.id))
+end
+
+M.finishLegacyMigration = finishLegacyMigration
 
 function M.handleUseCure(playerObj, args, directTarget)
     if not playerObj or not args then return end
@@ -922,11 +646,29 @@ function M.handleUseCure(playerObj, args, directTarget)
 end
 
 local function onClientCommand(module, command, playerObj, args)
-    if module == M.MODULE and command == "useCure" then
-        M.handleUseCure(playerObj, args or {})
+    if module ~= M.MODULE then return end
+    args = args or {}
+    if command == "useCure" then
+        M.handleUseCure(playerObj, args)
+    elseif command == "trueCompanionRecruitResult" then
+        local pending = pendingRestorations[args.key]
+        if pending and pending.playerObj == playerObj then
+            if args.ok == true then
+                pending.lastRecruitFailure = nil
+            else
+                pending.lastRecruitFailure = args.reason or "client-recruit-not-ready"
+                -- The companion object and its brain replicate separately. A
+                -- first miss is expected in MP, so retry instead of aborting.
+                pending.nextRecruitTick = math.min(
+                    pending.nextRecruitTick or pending.ticks,
+                    pending.ticks + 15
+                )
+            end
+        end
+    elseif command == "legacyTrueCompanionMigrated" then
+        finishLegacyMigration(playerObj, args)
     end
 end
 
 Events.OnClientCommand.Add(onClientCommand)
 Events.OnTick.Add(processPendingRestorations)
-Events.OnTick.Add(upgradeExistingRestoredCompanions)

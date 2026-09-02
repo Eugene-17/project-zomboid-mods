@@ -29,7 +29,6 @@ local function itemVisualSnapshot(visual, fullType, displayName, location)
         fullType = fullType or visual:getItemType(),
         displayName = displayName,
         location = location and tostring(location) or nil,
-        banditLocation = location and location:getTranslationName() or nil,
     }
     if visual then
         row.hue = visual:getHue()
@@ -142,6 +141,7 @@ function M.isProneLivingTarget(playerObj, target)
     if not playerObj or not target or playerObj == target then return false end
     if not (instanceof(target, "IsoZombie") or instanceof(target, "IsoPlayer")) then return false end
     if target:isDead() then return false end
+    if M.isBanditTarget(target) then return false end
     if target:isKnockedDown() then return true end
     if target:isOnFloor() then return true end
     return target:isProne()
@@ -155,26 +155,21 @@ function M.isCloseEnough(playerObj, target)
     return dx * dx + dy * dy <= M.MAX_DISTANCE_SQUARED
 end
 
-function M.isCompanionTarget(target)
-    if not target or not instanceof(target, "IsoZombie") or target:isDead() then return false end
-    local brain = target:getModData().brain
-    local cureApi = EugenesZombieCure
-    if cureApi and cureApi.isRestoredCompanionBrain
-        and cureApi.isRestoredCompanionBrain(brain) then
-        return true
+function M.isBanditTarget(target)
+    if not target or not instanceof(target, "IsoZombie") then return false end
+    if target:getVariableBoolean("Bandit") then return true end
+    if type(target:getModData().brain) == "table" then return true end
+    if GetBanditClusterData then
+        local id = target:getPersistentOutfitID()
+        local cluster = GetBanditClusterData(id)
+        if cluster and type(cluster[id]) == "table" then return true end
     end
-    local program = brain and brain.program
-    local programName = type(program) == "table" and program.name or program
-    return target:getVariableBoolean("Bandit")
-        and brain ~= nil
-        and not brain.hostile
-        and not brain.hostileP
-        and (programName == "Companion" or programName == "CompanionGuard")
+    return false
 end
 
 function M.canInteract(playerObj, target)
     if not M.isCloseEnough(playerObj, target) then return false end
-    return M.isProneLivingTarget(playerObj, target) or M.isCompanionTarget(target)
+    return M.isProneLivingTarget(playerObj, target)
 end
 
 function M.isPacifiedZombie(target)
@@ -185,7 +180,9 @@ function M.isPacifiedZombie(target)
 end
 
 function M.canCarryZombie(playerObj, target)
-    return M.isPacifiedZombie(target) and M.isCloseEnough(playerObj, target)
+    return not M.isBanditTarget(target)
+        and M.isPacifiedZombie(target)
+        and M.isCloseEnough(playerObj, target)
 end
 
 function M.isZombieRecord(item)
@@ -249,10 +246,6 @@ end
 
 function M.getTargetName(target)
     if instanceof(target, "IsoZombie") then
-        local brain = target:getModData().brain
-        if M.isCompanionTarget(target) and brain and brain.fullname and brain.fullname ~= "" then
-            return brain.fullname
-        end
         return getText("IGUI_EPE_TargetZombie")
     end
     local name = target:getDisplayName()

@@ -1,5 +1,0 @@
-name=Eugene's Bandits Compatibility
-id=EugenesBanditsCompatibility
-description=Repairs Bandits 2 custom-profile spawning and BanditFS compatibility on Build 42.20.4 without modifying the Workshop mod.
-versionMin=42.20
-require=Bandits2

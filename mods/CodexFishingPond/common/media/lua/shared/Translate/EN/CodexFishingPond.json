@@ -1,4 +1,4 @@
 {
-    "Tooltip_CFP_BuildCenter": "Builds one true vanilla water tile recognized by fishing and fishing nets, then automatically adds a varied vanilla shoreline to surrounding land. Existing water is never covered. Requires two full 10 L metal buckets of water (20 L total), a shovel or spade, and Carpentry 6.",
+    "Tooltip_CFP_BuildCenter": "Builds one true vanilla water tile recognized by fishing and fishing nets, then adds varied straight shoreline to its four sides. Existing water is never covered. Requires two full 10 L metal buckets of water (20 L total), a shovel or spade, and Carpentry 6.",
     "Tooltip_CFP_FillTile": "Fills one constructed pond center and automatically recalculates its shoreline. Requires two uses (half a bag) of dirt and a shovel or spade."
 }

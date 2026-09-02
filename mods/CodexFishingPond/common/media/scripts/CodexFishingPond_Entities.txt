@@ -12,13 +12,15 @@ module Base
         }
         component CraftRecipe
         {
-            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            timedAction = EmptyBag, time = 500, category = Outdoors, Tags = Outdoors,
             SkillRequired = Woodwork:6, xpAward = Woodwork:6, Tooltip = Tooltip_CFP_BuildCenter,
             inputs
             {
                 item 1 [Base.Shovel;Base.Shovel2;Base.SpadeForged;Base.SpadeWood] mode:keep flags[Prop1;MayDegradeLight],
-                item 2 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
-                -fluid 20.0 categories[Water] mode:mixture,
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 10.0 categories[Water] mode:mixture,
+                item 1 [Base.Bucket;Base.BucketEmpty;Base.BucketWaterDebug] mode:keep,
+                -fluid 10.0 categories[Water] mode:mixture,
             }
         }
     }
@@ -35,7 +37,7 @@ module Base
         }
         component CraftRecipe
         {
-            timedAction = EmptyBag, time = 100, category = Outdoors, Tags = Outdoors,
+            timedAction = EmptyBag, time = 300, category = Outdoors, Tags = Outdoors,
             Tooltip = Tooltip_CFP_FillTile,
             inputs
             {

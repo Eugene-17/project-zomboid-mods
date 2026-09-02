@@ -6,6 +6,7 @@ M.MODULE = "CodexFishingPond"
 M.DATA_KEY = "CodexFishingPond_v2"
 M.MARKER_KEY = "CodexFishingPondTileId"
 M.VARIANT_KEY = "CodexFishingPondVariant"
+M.SHORE_SCHEMA_VERSION = 5
 M.SCHOOL_BASE_CAPACITY = 10
 M.SCHOOL_FISH_PER_CENTER = 5
 M.SCHOOL_REPOPULATE_PER_DAY = 1
@@ -22,7 +23,23 @@ M.WATER_SPRITES = {
 
 -- Vanilla pond/river shoreline attachments. These deliberately do not carry
 -- the water flag: they remain walkable land surrounding the fishable center.
+-- Each sprite faces inward toward the neighboring water square. Corners are
+-- intentionally omitted because diagonal wedges do not join cleanly here.
 M.SHORE_SPRITES = {
+    edgeN = "blends_natural_02_11",
+    edgeW = "blends_natural_02_10",
+    edgeE = "blends_natural_02_9",
+    edgeS = "blends_natural_02_8",
+    edgeN2 = "blends_natural_02_15",
+    edgeW2 = "blends_natural_02_14",
+    edgeE2 = "blends_natural_02_13",
+    edgeS2 = "blends_natural_02_12",
+}
+
+-- Earlier layouts used other straight-edge assignments and four diagonal
+-- wedges. Retain those names so an old pond can remain untouched and still be
+-- filled in safely later; version 5 selects only the inward-facing pieces.
+M.LEGACY_SHORE_SPRITES = {
     cornerNW = "blends_natural_02_1",
     cornerNE = "blends_natural_02_4",
     cornerSW = "blends_natural_02_3",
@@ -36,6 +53,10 @@ M.SHORE_SPRITES = {
     edgeE2 = "blends_natural_02_14",
     edgeS2 = "blends_natural_02_15",
 }
+
+function M.getKnownShoreSprite(variant)
+    return M.SHORE_SPRITES[variant] or M.LEGACY_SHORE_SPRITES[variant]
+end
 
 function M.findMarkedObject(square)
     if not square then return nil, nil end

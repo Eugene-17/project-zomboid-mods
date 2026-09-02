@@ -183,5 +183,10 @@
     "BuySkillBook_ScavengingSkill_BookScavenging2": "Buy Scavenging Vol. 2 ($20)",
     "BuySkillBook_ScavengingSkill_BookScavenging3": "Buy Scavenging Vol. 3 ($30)",
     "BuySkillBook_ScavengingSkill_BookScavenging4": "Buy Scavenging Vol. 4 ($40)",
-    "BuySkillBook_ScavengingSkill_BookScavenging5": "Buy Scavenging Vol. 5 ($50)"
+    "BuySkillBook_ScavengingSkill_BookScavenging5": "Buy Scavenging Vol. 5 ($50)",
+    "SellElectronicsScrap1": "Sell 1 Electronics Scrap ($1)",
+    "SellElectronicsScrap10": "Sell 10 Electronics Scrap ($10, Faster)",
+    "SellElectronicsScrap50": "Sell 50 Electronics Scrap ($50, Fastest)",
+    "SellToy": "Sell Toy ($2)",
+    "SellArtifactOrMemento": "Sell Artifact or Memento ($10)"
 }

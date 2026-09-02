@@ -3,9 +3,16 @@ module CodexBoneMeal
     item BoneMeal
     {
         DisplayCategory = Gardening,
-        ItemType = base:normal,
-        Weight = 0.2,
-        Icon = TZ_IndieStoneNPK,
+        ItemType = base:drainable,
+        Weight = 2.0,
+        Icon = Sandbag,
+        ConditionMax = 1,
+        ReplaceInPrimaryHand = Bag_Sandbag_RHand holdingbagright,
+        ReplaceInSecondHand = Bag_Sandbag_LHand holdingbagleft,
+        ReplaceOnDeplete = Base.EmptySandbag,
+        UseDelta = 0.2,
+        UseWhileEquipped = false,
+        WorldStaticModel = DirtBag_Ground,
         Tooltip = Tooltip_CBM_BoneMeal,
     }
 
@@ -22,7 +29,8 @@ module CodexBoneMeal
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 1 [Base.AnimalBone;Base.LargeAnimalBone],
+            item 1 [Base.EmptySandbag],
+            item 5 [Base.AnimalBone;Base.LargeAnimalBone],
         }
         outputs
         {
@@ -43,7 +51,8 @@ module CodexBoneMeal
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 3 [Base.SmallAnimalBone],
+            item 1 [Base.EmptySandbag],
+            item 15 [Base.SmallAnimalBone],
         }
         outputs
         {

@@ -1,5 +1,5 @@
 name=Eugene's Zombie Cure
 id=EugenesZombieCure
-description=Adds a Medical 3 corpse reanimation drug, a Medical 6 Knox cure, and a Medical 10 serum that turns a recorded pacified zombie into a permanent Bandits companion.
-require=Bandits2,EugenesProneEquipment
+description=Adds the Medical 3 Faulty Cure, Medical 6 Simple Cure, and Medical 10 True Cure. The True Cure recruits a permanent Fond companion with the restored zombie's appearance through True Companions, drops the zombie's belongings, and leaves the companion inventory empty.
+require=TrueCompanions,EugenesProneEquipment
 versionMin=42.20

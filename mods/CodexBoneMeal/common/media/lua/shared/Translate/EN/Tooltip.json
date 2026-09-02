@@ -1,4 +1,4 @@
 {
-    "Tooltip_CBM_BoneMeal": "Right-click a living, adequately watered crop to advance it by exactly one growth stage. The same plant can be treated once every 24 in-game hours.",
-    "Tooltip_CBM_ApplyBoneMeal": "Advances this crop by one stage. Does not bypass watering, disease care, or the 24-hour per-plant limit."
+    "Tooltip_CBM_BoneMeal": "Contains five applications. Right-click a living crop to advance it by exactly one growth stage. The empty sack is returned after the fifth use.",
+    "Tooltip_CBM_ApplyBoneMeal": "Uses one-fifth of the sack to advance this crop by one stage. No watering requirement or per-plant cooldown; serious disease must still be treated."
 }

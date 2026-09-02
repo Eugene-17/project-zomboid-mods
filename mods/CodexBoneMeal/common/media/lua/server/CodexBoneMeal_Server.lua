@@ -12,20 +12,56 @@ local function notify(playerObj, message, ok)
     end
 end
 
-local function getCooldowns()
-    local data = ModData.getOrCreate(M.DATA_KEY)
-    data.cooldowns = data.cooldowns or {}
-    return data.cooldowns
-end
-
 local function consumeBoneMeal(item)
     local container = item and item:getContainer()
     if not container then return false end
-    container:Remove(item)
-    if isServer() then
-        sendRemoveItemFromContainer(container, item)
+
+    if instanceof(item, "DrainableComboItem") then
+        local remaining = item:getCurrentUsesFloat() - item:getUseDelta()
+        if remaining > 0.0001 then
+            item:setUsedDelta(remaining)
+            if isServer() then sendItemStats(item) end
+            return true
+        end
+
+        if isServer() then sendRemoveItemFromContainer(container, item) end
+        container:Remove(item)
+        local emptySack = container:AddItem("Base.EmptySandbag")
+        if isServer() and emptySack then
+            sendAddItemToContainer(container, emptySack)
+        end
+        return emptySack ~= nil
     end
+
+    -- Compatibility for a one-use bone-meal item saved before it became a sack.
+    if isServer() then sendRemoveItemFromContainer(container, item) end
+    container:Remove(item)
     return true
+end
+
+local function growWithoutWaterRequirement(plant, props)
+    local originalWater = plant.waterLvl
+    local requiredWater = tonumber(plant.waterNeeded)
+        or tonumber(props.waterNeeded)
+        or tonumber(props.waterLvl)
+        or 0
+    local maximumWater = tonumber(plant.waterNeededMax)
+        or tonumber(props.waterLvlMax)
+
+    -- Vanilla growPlant validates water internally. Give it a valid value for
+    -- this single call, then put the crop's actual water back unchanged.
+    local growthWater = math.max(0, requiredWater)
+    if maximumWater then growthWater = math.min(growthWater, maximumWater) end
+    plant.waterLvl = growthWater
+    local ok, result = pcall(
+        SFarmingSystem.instance.growPlant,
+        SFarmingSystem.instance,
+        plant,
+        nil,
+        true
+    )
+    plant.waterLvl = originalWater
+    return ok, result
 end
 
 function M.applyBoneMeal(playerObj, args)
@@ -70,18 +106,13 @@ function M.applyBoneMeal(playerObj, args)
         return
     end
 
-    local cooldowns = getCooldowns()
-    local key = M.squareKey(x, y, z)
-    local now = getGameTime():getWorldAgeHours()
-    local record = cooldowns[key]
-    if record and record.seedType == plant.typeOfSeed and now < (tonumber(record.untilHour) or 0) then
-        local hours = math.max(1, math.ceil(record.untilHour - now))
-        notify(playerObj, "This crop needs " .. tostring(hours) .. " more in-game hour(s) before another dose.", false)
+    local before = tonumber(plant.nbOfGrow) or -1
+    local grew, growError = growWithoutWaterRequirement(plant, props)
+    if not grew then
+        print("[CodexBoneMeal] crop growth failed: " .. tostring(growError))
+        notify(playerObj, "The crop could not advance, so the bone meal was not consumed.", false)
         return
     end
-
-    local before = tonumber(plant.nbOfGrow) or -1
-    SFarmingSystem.instance:growPlant(plant, nil, true)
     local after = tonumber(plant.nbOfGrow) or before
     if after ~= before + 1 or not plant:isAlive() then
         notify(playerObj, "The crop could not advance, so the bone meal was not consumed.", false)
@@ -93,12 +124,9 @@ function M.applyBoneMeal(playerObj, args)
         return
     end
 
-    cooldowns[key] = {
-        seedType = plant.typeOfSeed,
-        untilHour = now + M.COOLDOWN_HOURS,
-    }
+    local sprite = farming_vegetableconf.getSpriteName(plant)
+    if sprite then plant:setSpriteName(sprite) end
     plant:saveData()
-    if isServer() then ModData.transmit(M.DATA_KEY) end
 
     if plant.hasVegetable then
         notify(playerObj, "The crop advanced one stage and is now ready to harvest.", true)

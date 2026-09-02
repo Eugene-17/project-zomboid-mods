@@ -1,5 +1,5 @@
 {
-    "SynthesizeZombieCure": "Synthesize Knox Infection Cure",
-    "SynthesizeRestorationSerum": "Synthesize Human Restoration Serum",
-    "SynthesizeReanimationStimulant": "Synthesize Reanimation Stimulant"
+    "SynthesizeZombieCure": "Synthesize Simple Cure",
+    "SynthesizeRestorationSerum": "Synthesize True Cure",
+    "SynthesizeReanimationStimulant": "Synthesize Faulty Cure"
 }

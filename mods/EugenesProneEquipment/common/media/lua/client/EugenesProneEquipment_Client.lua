@@ -207,16 +207,6 @@ local function collectTargets(playerObj, worldObjects)
     for _, worldObject in ipairs(worldObjects) do
         collectSquare(worldObject and worldObject:getSquare())
     end
-    if BanditCompatibility and BanditCompatibility.GetClickedSquare then
-        local clicked = BanditCompatibility.GetClickedSquare()
-        collectSquare(clicked)
-        if clicked then
-            collectSquare(clicked:getN())
-            collectSquare(clicked:getS())
-            collectSquare(clicked:getE())
-            collectSquare(clicked:getW())
-        end
-    end
     return targets
 end
 
@@ -278,17 +268,8 @@ local function applyZombieVisuals(args)
     end
 
     pendingZombieVisuals[targetId] = nil
-    local companion = M.isCompanionTarget(zombie)
     if args.appearance then
         M.applyZombieAppearanceSnapshot(zombie, args.appearance, false)
-    end
-
-    if companion then
-        local walkType = zombie:getVariableString("BanditWalkType")
-        if not walkType or walkType == "" then walkType = "Walk" end
-        zombie:setVariable("BanditWalkType", walkType)
-        zombie:setWalkType(walkType)
-        return true
     end
 
     local visuals = zombie:getItemVisuals()

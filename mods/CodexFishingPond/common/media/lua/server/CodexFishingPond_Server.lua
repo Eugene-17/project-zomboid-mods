@@ -55,12 +55,16 @@ local function hasBlockingMovingObject(square, ignoredCharacter)
     return false
 end
 
-local function validateTile(square, ignoredCharacter, allowShoreReplacement)
+local function validateTile(
+    square, ignoredCharacter, allowShoreReplacement, skipMovingObjectCheck)
     if not square or square:getZ() ~= 0 then
         return nil, "Pond tiles can only be built at ground level."
     end
-    if not square:getFloor() or not square:isSolidFloor() then
-        return nil, "This pond tile needs existing solid ground."
+    -- Natural terrain has a real floor object but does not consistently report
+    -- isSolidFloor() in Build 42.  Requiring the latter makes otherwise valid
+    -- grass and soil squares stay red in the placement preview.
+    if not square:getFloor() then
+        return nil, "This pond tile needs existing ground."
     end
     if square:isWaterSquare() then return nil, "This square is already water." end
     local existingTileId = M.getMarkedTileId(square)
@@ -75,7 +79,9 @@ local function validateTile(square, ignoredCharacter, allowShoreReplacement)
         and Fishing.isNoFishZone(square:getX(), square:getY()) then
         return nil, "This map area is designated as non-fishable."
     end
-    if hasBlockingMovingObject(square, ignoredCharacter) or square:isVehicleIntersecting() then
+    if (not skipMovingObjectCheck
+            and hasBlockingMovingObject(square, ignoredCharacter))
+        or square:isVehicleIntersecting() then
         return nil, "A character, animal, or vehicle occupies this square."
     end
     if square:HasStairs() then return nil, "A pond tile cannot overlap stairs." end
@@ -119,19 +125,14 @@ local FOUR_NEIGHBOURS = {
     { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 },
 }
 
--- A shoreline square is selected from its position relative to a center.
--- Cardinal matches beat diagonal matches so a row of centers produces a
--- continuous straight bank. The A/B straight-edge sprites alternate by map
--- coordinate, matching the varied look of vanilla shoreline painting.
+-- A shoreline square is selected from its cardinal position relative to a
+-- center. The A/B straight-edge sprites alternate by map coordinate, matching
+-- the varied look of vanilla shoreline painting without corner wedges.
 local AUTO_SHORE_RULES = {
     { dx = 0, dy = -1, primary = "edgeN", alternate = "edgeN2", priority = 2 },
     { dx = -1, dy = 0, primary = "edgeW", alternate = "edgeW2", priority = 2 },
     { dx = 1, dy = 0, primary = "edgeE", alternate = "edgeE2", priority = 2 },
     { dx = 0, dy = 1, primary = "edgeS", alternate = "edgeS2", priority = 2 },
-    { dx = -1, dy = -1, primary = "cornerNW", priority = 1 },
-    { dx = 1, dy = -1, primary = "cornerNE", priority = 1 },
-    { dx = -1, dy = 1, primary = "cornerSW", priority = 1 },
-    { dx = 1, dy = 1, primary = "cornerSE", priority = 1 },
 }
 
 local function coordKey(x, y)
@@ -192,24 +193,19 @@ end
 local function isClosedPond(component, allByCoord)
     if #component == 0 then return false end
 
-    -- Every water tile must be surrounded in all eight directions by another
-    -- constructed water or shoreline tile.  One center plus its complete ring
-    -- is the minimum legitimate 3x3 pond.
+    -- Every water tile must have water or a bank on its four exposed sides.
+    -- Diagonal corner wedges are deliberately not required or generated.
     for _, entry in ipairs(component) do
         local x = entry.record.x
         local y = entry.record.y
-        for dx = -1, 1 do
-            for dy = -1, 1 do
-                if dx ~= 0 or dy ~= 0 then
-                    local neighbourX = x + dx
-                    local neighbourY = y + dy
-                    if not allByCoord[coordKey(neighbourX, neighbourY)] then
-                        -- Natural or other already-existing water replaces the
-                        -- automatic bank on that square and still closes the pond.
-                        local square = getCell():getGridSquare(neighbourX, neighbourY, 0)
-                        if not square or not square:isWaterSquare() then return false end
-                    end
-                end
+        for _, offset in ipairs(FOUR_NEIGHBOURS) do
+            local neighbourX = x + offset[1]
+            local neighbourY = y + offset[2]
+            if not allByCoord[coordKey(neighbourX, neighbourY)] then
+                -- Natural or other already-existing water replaces the
+                -- automatic bank on that square and still closes the pond.
+                local square = getCell():getGridSquare(neighbourX, neighbourY, 0)
+                if not square or not square:isWaterSquare() then return false end
             end
         end
     end
@@ -403,8 +399,29 @@ local function findAttachedSpriteIndex(floor, spriteName)
     return nil
 end
 
-local function attachShoreToFloor(floor, tileId, variant)
-    local spriteName = M.SHORE_SPRITES[variant]
+local function removeKnownShoreSprites(floor)
+    if not floor then return false end
+    local attached = floor:getAttachedAnimSprite()
+    if not attached then return false end
+
+    local known = {}
+    for _, spriteName in pairs(M.SHORE_SPRITES) do known[spriteName] = true end
+    for _, spriteName in pairs(M.LEGACY_SHORE_SPRITES) do known[spriteName] = true end
+
+    local changed = false
+    for index = attached:size() - 1, 0, -1 do
+        local instance = attached:get(index)
+        local sprite = instance and instance:getParentSprite() or nil
+        if sprite and known[sprite:getName()] then
+            floor:RemoveAttachedAnim(index)
+            changed = true
+        end
+    end
+    return changed
+end
+
+local function attachShoreToFloor(floor, tileId, variant, preservedSpriteName)
+    local spriteName = preservedSpriteName or M.SHORE_SPRITES[variant]
     if not spriteName then return false end
     if findAttachedSpriteIndex(floor, spriteName) == nil then
         floor:addAttachedAnimSpriteByName(spriteName)
@@ -422,13 +439,16 @@ local function chooseAutomaticShoreVariant(rule, x, y)
     return varied == 0 and rule.primary or rule.alternate
 end
 
-local function desiredAutomaticShoreVariant(centersByCoord, x, y)
+local function desiredAutomaticShoreVariant(centersByCoord, x, y, preserveLegacy)
     local selected = nil
     local selectedPriority = -1
 
     for _, rule in ipairs(AUTO_SHORE_RULES) do
         local centerKey = coordKey(x - rule.dx, y - rule.dy)
-        if centersByCoord[centerKey] and rule.priority > selectedPriority then
+        local center = centersByCoord[centerKey]
+        if center and (not preserveLegacy
+            or center.record.shoreSchema == M.SHORE_SCHEMA_VERSION)
+            and rule.priority > selectedPriority then
             selected = chooseAutomaticShoreVariant(rule, x, y)
             selectedPriority = rule.priority
         end
@@ -441,9 +461,7 @@ end
 local function removeShoreRecord(data, square, tileId, record)
     local floor = square and square:getFloor() or nil
     if floor then
-        local spriteName = record and M.SHORE_SPRITES[record.variant] or nil
-        local index = findAttachedSpriteIndex(floor, spriteName)
-        if index ~= nil then floor:RemoveAttachedAnim(index) end
+        removeKnownShoreSprites(floor)
 
         if floor:getModData()[M.MARKER_KEY] == tileId then
             floor:getModData()[M.MARKER_KEY] = nil
@@ -456,15 +474,21 @@ local function removeShoreRecord(data, square, tileId, record)
     if square then refreshSquare(square) end
 end
 
-local function reconcileAutomaticShoreAt(data, centersByCoord, square, ignoredCharacter)
+local function reconcileAutomaticShoreAt(
+    data, centersByCoord, square, ignoredCharacter, preserveLegacy)
     if not square or square:getZ() ~= 0 or not square:getFloor() then return false end
 
     local tileId = M.getMarkedTileId(square)
     local record = tileId and data.tiles[tileId] or nil
     if record and record.variant == "center" then return false end
+    if preserveLegacy and record
+        and record.shoreSchema ~= M.SHORE_SCHEMA_VERSION then
+        -- Existing ponds keep their saved edge mapping and corner pieces.
+        return false
+    end
 
     local desired = desiredAutomaticShoreVariant(
-        centersByCoord, square:getX(), square:getY())
+        centersByCoord, square:getX(), square:getY(), preserveLegacy)
 
     -- Never paint a bank over natural water or another constructed water tile.
     if square:isWaterSquare() then desired = nil end
@@ -482,9 +506,9 @@ local function reconcileAutomaticShoreAt(data, centersByCoord, square, ignoredCh
         end
         if record.variant ~= desired then
             local floor = square:getFloor()
-            local oldIndex = findAttachedSpriteIndex(floor, M.SHORE_SPRITES[record.variant])
-            if oldIndex ~= nil then floor:RemoveAttachedAnim(oldIndex) end
+            removeKnownShoreSprites(floor)
             record.variant = desired
+            record.shoreSchema = M.SHORE_SCHEMA_VERSION
             attachShoreToFloor(floor, tileId, desired)
             refreshSquare(square)
             return true
@@ -507,12 +531,14 @@ local function reconcileAutomaticShoreAt(data, centersByCoord, square, ignoredCh
     data.tiles[tileId] = {
         x = square:getX(), y = square:getY(), z = square:getZ(),
         variant = desired, originalSprite = originalSprite, autoShore = true,
+        shoreSchema = M.SHORE_SCHEMA_VERSION,
     }
     refreshSquare(square)
     return true
 end
 
-local function reconcileAutomaticShoreRegion(data, x, y, ignoredCharacter)
+local function reconcileAutomaticShoreRegion(
+    data, x, y, ignoredCharacter, preserveLegacy)
     local _, centersByCoord = collectTileMaps(data)
     local changed = false
 
@@ -520,7 +546,8 @@ local function reconcileAutomaticShoreRegion(data, x, y, ignoredCharacter)
         for dy = -1, 1 do
             local square = getCell():getGridSquare(x + dx, y + dy, 0)
             if reconcileAutomaticShoreAt(
-                    data, centersByCoord, square, ignoredCharacter) then
+                    data, centersByCoord, square, ignoredCharacter,
+                    preserveLegacy) then
                 changed = true
             end
         end
@@ -576,6 +603,7 @@ local function createTile(playerObj, square, variant)
     data.tiles[tileId] = {
         x = square:getX(), y = square:getY(), z = square:getZ(),
         variant = variant, originalSprite = originalSprite,
+        shoreSchema = variant == "center" and M.SHORE_SCHEMA_VERSION or nil,
     }
     if variant == "center" then
         reconcileAutomaticShoreRegion(
@@ -617,9 +645,7 @@ local function fillTile(playerObj, square, tileId)
         floor:transmitCompleteItemToClients()
     else
         local floor = square:getFloor()
-        local spriteName = M.SHORE_SPRITES[record.variant]
-        local index = findAttachedSpriteIndex(floor, spriteName)
-        if index ~= nil then floor:RemoveAttachedAnim(index) end
+        removeKnownShoreSprites(floor)
         floor:getModData()[M.MARKER_KEY] = nil
         floor:getModData()[M.VARIANT_KEY] = nil
         floor:transmitModData()
@@ -638,8 +664,10 @@ end
 local function isValidBuild(params, allowShoreReplacement)
     if not params or not params.square then return false end
     params.testCollisions = false
-    local playerObj = getPlayer and getPlayer() or nil
-    return validateTile(params.square, playerObj, allowShoreReplacement) ~= nil
+    -- OnIsValid receives no character in Build 42.  Do not guess with
+    -- getPlayer(), especially in split-screen or multiplayer; createTile()
+    -- revalidates occupancy with the actual builder before changing the map.
+    return validateTile(params.square, nil, allowShoreReplacement, true) ~= nil
 end
 
 local function createFromParams(params, variant)
@@ -687,11 +715,13 @@ local function migrateLegacyShoreSquare(square)
 
     local data = tileData()
     local record = data.tiles[tileId]
-    if not record or record.variant == "center" or not M.SHORE_SPRITES[record.variant] then return end
+    if not record or record.variant == "center" or not M.getKnownShoreSprite(record.variant) then return end
 
     square:transmitRemoveItemFromSquare(markedObject)
     square:RemoveTileObject(markedObject)
-    attachShoreToFloor(square:getFloor(), tileId, record.variant)
+    attachShoreToFloor(
+        square:getFloor(), tileId, record.variant,
+        M.getKnownShoreSprite(record.variant))
     refreshSquare(square)
     print("[CodexFishingPond] Migrated shoreline tile " .. tileId .. " to a floor attachment")
 end
@@ -707,22 +737,26 @@ local function reconcileLoadedAutomaticShore(square)
     -- LoadGridsquare fires for the whole streamed world. Avoid rebuilding the
     -- pond index unless this square is a pond tile or borders a loaded center.
     local nearCenter = record and record.variant == "center"
+        and record.shoreSchema == M.SHORE_SCHEMA_VERSION
     if not nearCenter then
         for _, rule in ipairs(AUTO_SHORE_RULES) do
             local neighbour = getCell():getGridSquare(
                 square:getX() - rule.dx, square:getY() - rule.dy, 0)
             local neighbourId = neighbour and M.getMarkedTileId(neighbour) or nil
             local neighbourRecord = neighbourId and data.tiles[neighbourId] or nil
-            if neighbourRecord and neighbourRecord.variant == "center" then
+            if neighbourRecord and neighbourRecord.variant == "center"
+                and neighbourRecord.shoreSchema == M.SHORE_SCHEMA_VERSION then
                 nearCenter = true
                 break
             end
         end
     end
-    if not nearCenter and not (record and record.autoShore) then return end
+    if not nearCenter and not (record and record.autoShore
+        and record.shoreSchema == M.SHORE_SCHEMA_VERSION) then return end
 
     local _, centersByCoord = collectTileMaps(data)
-    if reconcileAutomaticShoreAt(data, centersByCoord, square, nil) then
+    if reconcileAutomaticShoreAt(
+        data, centersByCoord, square, nil, true) then
         rebuildSchools(data)
         transmitData()
     end
@@ -746,10 +780,13 @@ local function initializeSchools()
     local data = tileData()
     local centers = {}
     for _, record in pairs(data.tiles) do
-        if record.variant == "center" then centers[#centers + 1] = record end
+        if record.variant == "center"
+            and record.shoreSchema == M.SHORE_SCHEMA_VERSION then
+            centers[#centers + 1] = record
+        end
     end
     for _, center in ipairs(centers) do
-        reconcileAutomaticShoreRegion(data, center.x, center.y, nil)
+        reconcileAutomaticShoreRegion(data, center.x, center.y, nil, true)
     end
     rebuildSchools(data)
     transmitData()
