@@ -188,5 +188,6 @@
     "SellElectronicsScrap10": "Sell 10 Electronics Scrap ($10, Faster)",
     "SellElectronicsScrap50": "Sell 50 Electronics Scrap ($50, Fastest)",
     "SellToy": "Sell Toy ($2)",
+    "SellCreditCard": "Sell Credit Card ($5)",
     "SellArtifactOrMemento": "Sell Artifact or Memento ($10)"
 }

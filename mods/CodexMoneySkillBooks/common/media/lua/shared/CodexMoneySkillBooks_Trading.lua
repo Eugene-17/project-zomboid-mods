@@ -23,5 +23,19 @@ function CodexMoneySkillBooksTrading.isSellableMemento(item)
         return false
     end
 
-    return TOYS[item:getFullType()] ~= true
+    local fullType = item:getFullType()
+    if TOYS[fullType] == true then
+        return false
+    end
+
+    local itemType = string.lower(item:getType() or "")
+    if string.find(itemType, "idcard", 1, true) or itemType == "pressid" then
+        return false
+    end
+
+    if item.hasTag and ItemTag and ItemTag.IDCARD and item:hasTag(ItemTag.IDCARD) then
+        return false
+    end
+
+    return true
 end

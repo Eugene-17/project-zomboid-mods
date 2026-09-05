@@ -1,111 +1,91 @@
 module CodexMoneySkillBooks
 {
-    craftRecipe SellElectronicsScrap1
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging1
     {
         timedAction = Making,
         time = 20,
         AllowBatchCraft = false,
         Tags = InHandCraft;CanBeDoneInDark,
-        category = Miscellaneous,
         inputs
         {
             item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
-            item 1 [Base.ElectronicsScrap],
+            item 10 [Base.Money],
         }
         outputs
         {
-            item 1 Base.Money,
+            item 1 ScavengingSkill.BookScavenging1,
         }
     }
 
-    craftRecipe SellElectronicsScrap10
-    {
-        timedAction = Making,
-        time = 100,
-        AllowBatchCraft = false,
-        Tags = InHandCraft;CanBeDoneInDark,
-        category = Miscellaneous,
-        inputs
-        {
-            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
-            item 10 [Base.ElectronicsScrap],
-        }
-        outputs
-        {
-            item 10 Base.Money,
-        }
-    }
-
-    craftRecipe SellElectronicsScrap50
-    {
-        timedAction = Making,
-        time = 250,
-        AllowBatchCraft = false,
-        Tags = InHandCraft;CanBeDoneInDark,
-        category = Miscellaneous,
-        inputs
-        {
-            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
-            item 50 [Base.ElectronicsScrap],
-        }
-        outputs
-        {
-            item 50 Base.Money,
-        }
-    }
-
-    craftRecipe SellToy
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging2
     {
         timedAction = Making,
         time = 20,
         AllowBatchCraft = false,
         Tags = InHandCraft;CanBeDoneInDark,
-        category = Miscellaneous,
         inputs
         {
             item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
-            item 1 [Base.Bricktoys;Base.CardDeck;Base.CatToy;Base.Crayons;Base.Cube;Base.Dice;Base.DogChew;Base.Doll;Base.RubberSpider;Base.ToyBear;Base.ToyBear_Crafted_Cotton;Base.ToyBear_Crafted_Burlap;Base.ToyCar;Base.ToyPlane;Base.Yoyo],
+            item 1 [ScavengingSkill.BookScavenging1],
+            item 20 [Base.Money],
         }
         outputs
         {
-            item 2 Base.Money,
+            item 1 ScavengingSkill.BookScavenging2,
         }
     }
 
-    craftRecipe SellCreditCard
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging3
     {
         timedAction = Making,
         time = 20,
         AllowBatchCraft = false,
         Tags = InHandCraft;CanBeDoneInDark,
-        category = Miscellaneous,
         inputs
         {
             item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
-            item 1 [Base.CreditCard;Base.CreditCard_Stolen],
+            item 1 [ScavengingSkill.BookScavenging2],
+            item 30 [Base.Money],
         }
         outputs
         {
-            item 5 Base.Money,
+            item 1 ScavengingSkill.BookScavenging3,
         }
     }
 
-    craftRecipe SellArtifactOrMemento
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging4
     {
         timedAction = Making,
         time = 20,
-        OnTest = CodexMoneySkillBooksTrading.isSellableMemento,
         AllowBatchCraft = false,
         Tags = InHandCraft;CanBeDoneInDark,
-        category = Miscellaneous,
         inputs
         {
             item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
-            item 1 tags[base:ismemento],
+            item 1 [ScavengingSkill.BookScavenging3],
+            item 40 [Base.Money],
         }
         outputs
         {
-            item 10 Base.Money,
+            item 1 ScavengingSkill.BookScavenging4,
+        }
+    }
+
+    craftRecipe BuySkillBook_ScavengingSkill_BookScavenging5
+    {
+        timedAction = Making,
+        time = 20,
+        AllowBatchCraft = false,
+        Tags = InHandCraft;CanBeDoneInDark,
+        inputs
+        {
+            item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 1 [ScavengingSkill.BookScavenging4],
+            item 50 [Base.Money],
+        }
+        outputs
+        {
+            item 1 ScavengingSkill.BookScavenging5,
         }
     }
 }

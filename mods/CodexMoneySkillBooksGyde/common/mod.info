@@ -1,5 +1,5 @@
 name=Eugene's Money Skill Books - Gyde Trait Magazines
 id=CodexMoneySkillBooksGyde
-description=Optional Gyde's Trait Magazines bridge. Use any radio as a reusable trading tool to buy trait magazines for $20 per point of the trait's original Build 42 cost.
+description=Optional Gyde's Trait Magazines bridge. Use any radio as a reusable trading tool to buy trait magazines for $20 per point of the trait's original Build 42 cost; zero-cost traits cost $50.
 require=CodexMoneySkillBooks,GydeTraitMags
 versionMin=42.20

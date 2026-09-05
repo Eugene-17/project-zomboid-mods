@@ -83,6 +83,7 @@ module CodexMoneySkillBooksGyde
         inputs
         {
             item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 50 [Base.Money],
         }
         outputs { item 1 Base.AxeManMag, }
     }
@@ -93,6 +94,7 @@ module CodexMoneySkillBooksGyde
         inputs
         {
             item 1 [Base.WalkieTalkie1;Base.WalkieTalkie2;Base.WalkieTalkie3;Base.WalkieTalkie4;Base.WalkieTalkie5;Base.WalkieTalkieMakeShift;Base.ManPackRadio;Base.HamRadio1;Base.HamRadio2;Base.HamRadioMakeShift;Base.RadioBlack;Base.RadioMakeShift;Base.RadioRed] mode:keep,
+            item 50 [Base.Money],
         }
         outputs { item 1 Base.BurglarMag, }
     }

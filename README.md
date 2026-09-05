@@ -12,7 +12,7 @@ Dependency: Autotsar Tuning Atelier Bus. More Traits items are detected and adde
 
 ### Eugene's Money Skill Books
 
-Adds hand-crafting recipes that use any radio as a reusable trading tool to exchange loose cash for individual skill books. Volume 1 costs $10; Volumes 2–5 cost $20, $30, $40, and $50 respectively and also consume the immediately previous volume. The radio can also sell electronics scrap for $1 each (with faster 10- and 50-item bulk trades), ordinary toys for $2 each, and tagged artifacts or mementos for $10 each. Trading awards no skill XP. Recipes are also provided for compatible skill books from the currently installed Extra Books, RadArchery, and Scavenging mods. An optional Gyde's Trait Magazines bridge prices each magazine at $20 per vanilla trait point.
+Adds hand-crafting recipes that use any radio as a reusable trading tool to exchange loose cash for individual skill books. Volume 1 costs $10; Volumes 2–5 cost $20, $30, $40, and $50 respectively and also consume the immediately previous volume. The radio can also sell electronics scrap for $1 each (with faster 10- and 50-item bulk trades), ordinary toys for $2 each, credit cards for $5 each, and tagged artifacts or mementos for $10 each. ID cards are excluded from memento sales. Trading awards no skill XP. Recipes are also provided for compatible skill books from the currently installed Extra Books, RadArchery, and Scavenging mods. An optional Gyde's Trait Magazines bridge prices each magazine at $20 per vanilla trait point, with a $50 minimum for zero-cost traits.
 
 ### Eugene's Random Animal Carriers
 
